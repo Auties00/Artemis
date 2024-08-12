@@ -14,17 +14,33 @@ struct SearchEntryView: View {
     }
     
     var body: some View {
-        NavigationLink(value: PageType.search(entry)) {
+        NavigationLink(value: NestedPageType.search(entry)) {
             HStack(alignment: .top, spacing: 0) {
                 NetworkImage(url: entry.coverUrl)
                     .frame(width: 175, height: 100)
+                    .layoutPriority(1)
                 Spacer()
                     .frame(width: 12)
-                Text(entry.name)
-                    .lineLimit(2)
-                    .font(.system(size: 24))
-                    .fontWeight(.bold)
+                VStack(alignment: .leading) {
+                    Text(entry.name)
+                        .lineLimit(3)
+                        .font(.system(size: 20))
+                        .fontWeight(.bold)
+                    if let seasonsCount = entry.seasonsCount {
+                        Text("\(seasonsCount) season\(seasonsCount != 1 ? "s" : "")")
+                            .font(.system(size: 14))
+                            .foregroundColor(.secondary)
+                    }else if let videosCount = entry.videosCount {
+                        Text("\(videosCount) video\(videosCount != 1 ? "s" : "")")
+                            .font(.system(size: 14))
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .layoutPriority(1)
+                Spacer()
+                    .frame(width: 12)
             }
-        }.buttonStyle(PlainButtonStyle())
+        }
+        .buttonStyle(.plain)
     }
 }

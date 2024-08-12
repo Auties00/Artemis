@@ -8,10 +8,9 @@
 import Foundation
 import SwiftUI
 
-struct iPhoneDimensions {
-    static let screenHeight = UIScreen.main.bounds.height
-    
-    static var horizontalPaddingAddend: CGFloat {
+extension View {
+    var horizontalPaddingAddend: CGFloat {
+        let screenHeight = UIScreen.main.bounds.height
         if screenHeight * UIScreen.main.nativeScale >= 896 * 3 || screenHeight == 736 { // iPhone pro max, iPhone plus
             return 20
         } else if screenHeight == 568 { // iPhone SE 1st gen

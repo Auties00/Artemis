@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct ProfilesResponse: Decodable {
+    let items: [Profile]
+    let flow: String
+    let pinProtection: String
+}

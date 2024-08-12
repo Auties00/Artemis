@@ -2,17 +2,23 @@
 //  Download.swift
 //  Hidive
 //
-//  Created by Alessandro Autiero on 30/07/24.
+//  Created by Alessandro Autiero on 08/08/24.
 //
 
-import SwiftUI
+import Foundation
+import AVFoundation
 
-struct Download: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
-
-#Preview {
-    Download()
+@Observable
+class ActiveDownload {
+    var downloadTask: AVAssetDownloadTask?
+    var subtitlesInjector: SubtitlesResourceInjector?
+    var fairplaySessionHandler: FairplayContentKeySessionHandler?
+    var fairplaySession: AVContentKeySession?
+    var resourceSaver: OfflineResourceSaver?
+    var observer: NSObject?
+    var progress: Double = 0
+    var paused: Bool = false
+    var cancelled: Bool = false
+    var childHandler: (() -> Void)?
+    var childrenIds: [Int] = []
 }

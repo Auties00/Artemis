@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "8C1D9443-3EBC-430A-B831-2A0EBBADFE6F"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "36BE80CE-D69F-40FF-A85C-66462988AD5F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Code/View/Route/Episode/EpisodePlayerView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "251"
+            endingLineNumber = "251"
+            landmarkName = "handleFairplay(url:loadingRequest:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "36BE80CE-D69F-40FF-A85C-66462988AD5F - 2cc4750fb7e9de97"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in Hidive.PlayerViewController.resourceLoader(_: __C.AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource: __C.AVAssetResourceLoadingRequest) -&gt; Swift.Bool"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/View/Route/Episode/EpisodePlayerView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "182"
+                  endingLineNumber = "182"
+                  offsetFromSymbolStart = "3268">
+               </Location>
+               <Location
+                  uuid = "36BE80CE-D69F-40FF-A85C-66462988AD5F - 6ff600ea7168fb92"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Hidive.PlayerViewController.handleFairplay(url: Foundation.URL, loadingRequest: __C.AVAssetResourceLoadingRequest) -&gt; Swift.Bool"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/View/Route/Episode/EpisodePlayerView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "182"
+                  endingLineNumber = "182"
+                  offsetFromSymbolStart = "616">
+               </Location>
+               <Location
+                  uuid = "36BE80CE-D69F-40FF-A85C-66462988AD5F - 6ff600ea7168fdc2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Hidive.PlayerViewController.handleFairplay(url: Foundation.URL, loadingRequest: __C.AVAssetResourceLoadingRequest) -&gt; Swift.Bool"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/View/Route/Episode/EpisodePlayerView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "230"
+                  endingLineNumber = "230"
+                  offsetFromSymbolStart = "632">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "07B9BA08-EF02-41B9-8B30-E216B9EEB3A8"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Code/View/Route/Episode/EpisodePlayerView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "274"
+            endingLineNumber = "274"
+            landmarkName = "handleFairplay(url:loadingRequest:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "237C6D12-876E-4306-8E6D-A92814A42F1A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Code/View/Route/Episode/EpisodePlayerView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "255"
+            endingLineNumber = "255"
+            landmarkName = "handleFairplay(url:loadingRequest:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "737208EF-B10F-47AC-B36C-6817F8063553"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Code/View/Route/Episode/EpisodePlayerView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "259"
+            endingLineNumber = "259"
+            landmarkName = "handleFairplay(url:loadingRequest:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9453836F-22C6-464E-B6C6-B16DD036840C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Code/View/Route/Episode/EpisodePlayerView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "331"
+            endingLineNumber = "331"
+            landmarkName = "handleFairplay(url:loadingRequest:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2D11DEF6-9011-4DE6-A953-8A34D983E240"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Code/View/Route/Episode/EpisodePlayerView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "270"
+            endingLineNumber = "270"
+            landmarkName = "handleFairplay(url:loadingRequest:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D4F4116F-E824-418A-BE2A-7286DB4D881D"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Code/View/Shared/NetworkImage.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "D4F4116F-E824-418A-BE2A-7286DB4D881D - 8e4ec81e966949b4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for closure #2 @Sendable () async -&gt; () in Hidive.NetworkImage.body.getter : some"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/View/Shared/NetworkImage.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "49"
+                  endingLineNumber = "49"
+                  offsetFromSymbolStart = "528">
+               </Location>
+               <Location
+                  uuid = "D4F4116F-E824-418A-BE2A-7286DB4D881D - d302091b7df3f5b6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #2 @Sendable () async -&gt; () in Hidive.NetworkImage.body.getter : some"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/View/Shared/NetworkImage.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "49"
+                  endingLineNumber = "49"
+                  offsetFromSymbolStart = "728">
+               </Location>
+               <Location
+                  uuid = "D4F4116F-E824-418A-BE2A-7286DB4D881D - d5c6a96cecf57b7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for closure #2 @Sendable () async -&gt; () in Hidive.NetworkImage.body.getter : some"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/View/Shared/NetworkImage.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "49"
+                  endingLineNumber = "49"
+                  offsetFromSymbolStart = "216">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9AB25D42-493E-4218-B6DA-DCB3B224A4F3"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Code/Controller/ApiController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "73"
+            endingLineNumber = "73"
+            landmarkName = "sendRequest(method:url:path:data:log:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "9AB25D42-493E-4218-B6DA-DCB3B224A4F3 - bf5e1a6c2f1a1d69"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Hidive.ApiController.sendRequest&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable&gt;(method: Swift.String, url: Swift.Optional&lt;Swift.String&gt;, path: Swift.String, data: Swift.Optional&lt;Swift.Encodable&gt;, log: Swift.Bool) async throws -&gt; &#x3c4;_0_0"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/Controller/ApiController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "73"
+                  endingLineNumber = "73"
+                  offsetFromSymbolStart = "480">
+               </Location>
+               <Location
+                  uuid = "9AB25D42-493E-4218-B6DA-DCB3B224A4F3 - bf5e1a6c2f1a1d69"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Hidive.ApiController.sendRequest&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable&gt;(method: Swift.String, url: Swift.Optional&lt;Swift.String&gt;, path: Swift.String, data: Swift.Optional&lt;Swift.Encodable&gt;, log: Swift.Bool) async throws -&gt; &#x3c4;_0_0"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/Controller/ApiController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "73"
+                  endingLineNumber = "73"
+                  offsetFromSymbolStart = "560">
+               </Location>
+               <Location
+                  uuid = "9AB25D42-493E-4218-B6DA-DCB3B224A4F3 - 593ba375e6ddbeea"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Hidive.ApiController.sendRequest&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable&gt;(method: Swift.String, url: Swift.Optional&lt;Swift.String&gt;, path: Swift.String, data: Swift.Optional&lt;Swift.Encodable&gt;, log: Swift.Bool) async throws -&gt; &#x3c4;_0_0"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/Controller/ApiController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "73"
+                  endingLineNumber = "73"
+                  offsetFromSymbolStart = "140">
+               </Location>
+               <Location
+                  uuid = "9AB25D42-493E-4218-B6DA-DCB3B224A4F3 - 593ba375e6ddbeea"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Hidive.ApiController.sendRequest&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable&gt;(method: Swift.String, url: Swift.Optional&lt;Swift.String&gt;, path: Swift.String, data: Swift.Optional&lt;Swift.Encodable&gt;, log: Swift.Bool) async throws -&gt; &#x3c4;_0_0"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/Controller/ApiController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "73"
+                  endingLineNumber = "73"
+                  offsetFromSymbolStart = "212">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F6F492D1-0865-41A1-B458-4124ADD341D8"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Code/Model/Response/DashboardResponse.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "162"
+            endingLineNumber = "162"
+            landmarkName = "init(from:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "599B2C3C-ACDD-416A-AE05-9AC3B4BBDDA0"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Code/Controller/ScheduleController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "74"
+            endingLineNumber = "74"
+            landmarkName = "loadData()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "599B2C3C-ACDD-416A-AE05-9AC3B4BBDDA0 - 543e57deaa2112f2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #2 (inout Swift.ThrowingTaskGroup&lt;Hidive.ScheduleBucketEntry, Swift.Error&gt;) async throws -&gt; () in Hidive.ScheduleController.loadData() async -&gt; ()"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/Controller/ScheduleController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "74"
+                  endingLineNumber = "74"
+                  offsetFromSymbolStart = "348">
+               </Location>
+               <Location
+                  uuid = "599B2C3C-ACDD-416A-AE05-9AC3B4BBDDA0 - 8bdf2c7c1ec47382"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for closure #1 @Sendable () async throws -&gt; Hidive.ScheduleBucketEntry in closure #2 (inout Swift.ThrowingTaskGroup&lt;Hidive.ScheduleBucketEntry, Swift.Error&gt;) async throws -&gt; () in Hidive.ScheduleController.loadData() async -&gt; ()"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/Controller/ScheduleController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "74"
+                  endingLineNumber = "74"
+                  offsetFromSymbolStart = "284">
+               </Location>
+               <Location
+                  uuid = "599B2C3C-ACDD-416A-AE05-9AC3B4BBDDA0 - 8bdf2c7c1ec47382"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for closure #1 @Sendable () async throws -&gt; Hidive.ScheduleBucketEntry in closure #2 (inout Swift.ThrowingTaskGroup&lt;Hidive.ScheduleBucketEntry, Swift.Error&gt;) async throws -&gt; () in Hidive.ScheduleController.loadData() async -&gt; ()"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/Controller/ScheduleController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "74"
+                  endingLineNumber = "74"
+                  offsetFromSymbolStart = "384">
+               </Location>
+               <Location
+                  uuid = "599B2C3C-ACDD-416A-AE05-9AC3B4BBDDA0 - 537d9cbdde5ad481"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for closure #1 @Sendable () async throws -&gt; Hidive.ScheduleBucketEntry in closure #2 (inout Swift.ThrowingTaskGroup&lt;Hidive.ScheduleBucketEntry, Swift.Error&gt;) async throws -&gt; () in Hidive.ScheduleController.loadData() async -&gt; ()"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/Controller/ScheduleController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "74"
+                  endingLineNumber = "74"
+                  offsetFromSymbolStart = "340">
+               </Location>
+               <Location
+                  uuid = "599B2C3C-ACDD-416A-AE05-9AC3B4BBDDA0 - 537d9cbdde5ad481"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for closure #1 @Sendable () async throws -&gt; Hidive.ScheduleBucketEntry in closure #2 (inout Swift.ThrowingTaskGroup&lt;Hidive.ScheduleBucketEntry, Swift.Error&gt;) async throws -&gt; () in Hidive.ScheduleController.loadData() async -&gt; ()"
+                  moduleName = "Hidive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/auties00/Documents/XCodeProjects/Hidive/Hidive/Code/Controller/ScheduleController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "74"
+                  endingLineNumber = "74"
+                  offsetFromSymbolStart = "440">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "435E29B5-4E65-4CF3-84DF-9530955C0854"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Code/Model/Response/DashboardResponse.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "163"
+            endingLineNumber = "163"
+            landmarkName = "init(from:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "30689808-2162-4AA2-ABF7-80B35CAD9669"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Model/Object/Season.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
+            landmarkName = "init(from:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E916889A-1F87-48A6-AE62-FEB5EE9EE719"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/View/Player/EpisodePlayer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "275"
+            endingLineNumber = "275"
+            landmarkName = "addNextButton()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C0180AE4-ACDD-4BEC-AB0B-7D9B1F6686EB"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/View/Route/Season/SeriesView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "253"
+            endingLineNumber = "253"
+            landmarkName = "loadMoreData()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A4845788-6F92-49F8-ADD9-A707A0B5A2F5"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Util/Fairplay.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "308"
+            endingLineNumber = "308"
+            landmarkName = "handleOnlineFairplay(contentIdentifier:loadingRequest:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "748954E7-A6A7-4C5F-B584-5B9B861B2C25"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/Model/Struct/Season.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "83"
+            endingLineNumber = "83"
+            landmarkName = "encode(to:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C695B777-FA26-4776-B065-7F19FDF1F399"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/View/Player/EpisodePlayer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "285"
+            endingLineNumber = "285"
+            landmarkName = "addNextButton()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9AC3DD8C-4D09-437D-8BA1-0920835F05EC"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/View/Player/EpisodePlayer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "302"
+            endingLineNumber = "302"
+            landmarkName = "addNextButton()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "40152835-BD82-455C-B66D-D16679DFBF60"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hidive/View/Route/Schedule/ScheduleCardView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

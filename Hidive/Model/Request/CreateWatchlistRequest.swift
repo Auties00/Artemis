@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+struct CreateWatchlistRequest: Encodable {
+    let name: String
+}

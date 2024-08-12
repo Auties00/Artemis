@@ -7,173 +7,103 @@
 
 import Foundation
 
-struct DashboardResponse : Decodable {
-    let heroes: [Hero]
-    let buckets: [Bucket]
-    let paging: BucketPaging
+struct DashboardResponse : Decodable, Equatable {
+    var heroes: [Hero]
+    var buckets: [Bucket]
+    let paging: Paging?
+    
+    static func == (lhs: DashboardResponse, rhs: DashboardResponse) -> Bool {
+        return lhs.heroes == rhs.heroes && lhs.buckets == rhs.buckets
+    }
+    
+    var continueWatchingBucket: Bucket? {
+        return buckets.first(where: {
+            $0.name?.caseInsensitiveCompare("Continue Watching") == .orderedSame
+        })
+    }
 }
 
-struct Hero : Decodable, Identifiable {
+@Observable
+class Hero : Decodable, Identifiable, Equatable {
     let heroId: Int
     let title: String?
     let description: String?
     let titleImage: String?
     let enabled: Bool?
     let ctaText: String?
-    let link: HeroLink?
+    let link: HeroLink
     let imageUrl: String?
+    var lastWatchedEpisode: Episode?
     
     var id: Int {
         return heroId
     }
+    
+    static func == (lhs: Hero, rhs: Hero) -> Bool {
+        return lhs.id == rhs.id && lhs.link == rhs.link
+    }
+    
+    enum CodingKeys: CodingKey {
+        case heroId
+        case title
+        case description
+        case titleImage
+        case enabled
+        case ctaText
+        case link
+        case imageUrl
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.heroId = try container.decode(Int.self, forKey: .heroId)
+        self.title = try container.decodeIfPresent(String.self, forKey: .title)
+        self.description = try container.decodeIfPresent(String.self, forKey: .description)
+        self.titleImage = try container.decodeIfPresent(String.self, forKey: .titleImage)
+        self.enabled = try container.decodeIfPresent(Bool.self, forKey: .enabled)
+        self.ctaText = try container.decodeIfPresent(String.self, forKey: .ctaText)
+        self.link = try container.decode(HeroLink.self, forKey: .link)
+        self.imageUrl = try container.decodeIfPresent(String.self, forKey: .imageUrl)
+    }
 }
 
-struct HeroLink : Decodable, Equatable {
+class HeroLink : Decodable, Equatable {
     let type: String?
-    let event: BucketEntry?
+    var event: DescriptableEntry
+    
+    static func == (lhs: HeroLink, rhs: HeroLink) -> Bool {
+        return lhs.type == rhs.type && lhs.event == rhs.event
+    }
 }
 
-struct ContentRating : Decodable, Equatable, Hashable {
-    let rating: String?
-    let descriptions: [String]?
-}
-
-struct Bucket : Decodable, Identifiable, Equatable {
-    let id: UUID
+@Observable // Needed for Continue Watching updates, special condition
+class Bucket : Decodable, Identifiable, Equatable {
+    var id: UUID
     let type: String?
-    let rowTypeData: BucketData?
     let name: String?
     let exid: String?
-    let paging: BucketPaging?
-    let contentList: [BucketEntry]?
+    let paging: Paging?
+    var contentList: [DescriptableEntry]
     
     enum CodingKeys: CodingKey {
         case type
-        case rowTypeData
         case name
         case exid
         case paging
         case contentList
     }
     
-    init(from decoder: Decoder) throws {
+    required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = UUID()
         self.type = try container.decodeIfPresent(String.self, forKey: .type)
-        self.rowTypeData = try container.decodeIfPresent(BucketData.self, forKey: .rowTypeData)
         self.name = try container.decodeIfPresent(String.self, forKey: .name)
         self.exid = try container.decodeIfPresent(String.self, forKey: .exid)
-        self.paging = try container.decodeIfPresent(BucketPaging.self, forKey: .paging)
-        self.contentList = try container.decodeIfPresent([BucketEntry].self, forKey: .contentList)
-    }
-}
-
-struct BucketData : Decodable, Equatable {
-    let title: String?
-    let rowCount: Int?
-    let rowType: String?
-    let playlistImageType: String?
-    let hideMetadata: Bool?
-}
-
-struct BucketPaging : Decodable, Equatable {
-    let moreDataAvailable: Bool?
-    let lastSeen: String?
-}
-
-enum BucketEntry: Decodable, Hashable, Identifiable {
-    case series(Series)
-    case season(Season)
-    case episode(Episode)
-    case playlist(Playlist)
-    
-    enum CodingKeys: CodingKey {
-        case type
+        self.paging = try container.decodeIfPresent(Paging.self, forKey: .paging)
+        self.contentList = try container.decode([DescriptableEntry].self, forKey: .contentList)
     }
     
-    var id: Int? {
-        switch(self) {
-        case .series(series: let series):
-            return series.id
-        case .season(season: let season):
-            return season.id
-        case .episode(series: let episode):
-            return episode.id
-        case .playlist(playlist: let playlist):
-            return playlist.id
-        }
-    }
-    
-    var title: String? {
-        switch(self) {
-        case .series(series: let series):
-            return series.title
-        case .season(season: let season):
-            return season.series?.title ?? season.title
-        case .episode(series: let episode):
-            return episode.title
-        case .playlist(playlist: let playlist):
-            return playlist.title
-        }
-    }
-    
-    var description: String? {
-        switch(self) {
-        case .series(series: let series):
-            return series.description
-        case .season(season: let season):
-            return season.series?.description ?? season.description
-        case .episode(series: let episode):
-            return episode.description
-        case .playlist(playlist: let playlist):
-            return playlist.description
-        }
-    }
-    
-    var longDescription: String? {
-        switch(self) {
-        case .series(series: let series):
-            return series.longDescription
-        case .season(season: let season):
-            return season.longDescription
-        case .episode(series: let episode):
-            return episode.description
-        case .playlist(playlist: let playlist):
-            return playlist.longDescription
-        }
-    }
-    
-    var coverUrl: String? {
-        switch(self) {
-        case .series(series: let series):
-            return series.coverUrl
-        case .season(season: let season):
-            return season.coverUrl
-        case .episode(series: let episode):
-            return episode.thumbnailUrl
-        case .playlist(playlist: let playlist):
-            return playlist.coverUrl
-        }
-    }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let type = try container.decodeIfPresent(String.self, forKey: .type)
-        switch(type) {
-        case "VOD_SEASON":
-            self = .season(try Season(from: decoder))
-        case "VOD_SERIES":
-            self = .series(try Series(from: decoder))
-        case "VOD":
-            self = .episode(try Episode(from: decoder))
-        case "PLAYLIST":
-            self = .playlist(try Playlist(from: decoder))
-        default:
-            fatalError("Unknown bucket type: \(type ?? "unknown")")
-        }
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+    static func == (lhs: Bucket, rhs: Bucket) -> Bool {
+        return lhs.id == rhs.id && lhs.name == rhs.name && lhs.contentList == rhs.contentList
     }
 }

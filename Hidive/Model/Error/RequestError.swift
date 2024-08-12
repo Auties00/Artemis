@@ -9,8 +9,9 @@ import Foundation
 
 enum RequestError : LocalizedError {
     case invalidUrl
-    case invalidConnection
+    case decodeError(String)
     case invalidRequestData(Error? = nil)
+    case invalidResponseStatusCode(Int)
     case invalidResponseData(Error? = nil)
     case failedRefresh
     
@@ -19,10 +20,12 @@ enum RequestError : LocalizedError {
             switch self {
             case .invalidUrl:
                 return "Invalid url"
-            case .invalidConnection:
-                return "Cannot connect to the server"
+            case .decodeError:
+                return "Cannot decode response"
             case .invalidRequestData:
                 return "Invalid request data"
+            case .invalidResponseStatusCode(let statusCode):
+                return "Unexepected status code: \(statusCode)"
             case .invalidResponseData:
                 return "Invalid response data"
             case .failedRefresh:
@@ -36,12 +39,14 @@ enum RequestError : LocalizedError {
             switch self {
             case .invalidUrl:
                 return "Please report this issue"
-            case .invalidRequestData(error: let error):
+            case .decodeError(let error):
+                return error
+            case .invalidRequestData(let error):
                 return error?.localizedDescription ?? "Unknown cause"
-            case .invalidResponseData(error: let error):
+            case .invalidResponseData(let error):
                 return error?.localizedDescription ?? "Unknown cause"
-            case .invalidConnection:
-                return "Please try again later"
+            case .invalidResponseStatusCode(let statusCode):
+                return "Received unexpected status code \(statusCode)"
             case .failedRefresh:
                 return "Cannot refresh auth token"
             }

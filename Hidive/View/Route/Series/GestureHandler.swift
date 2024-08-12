@@ -2,7 +2,7 @@
 //  GestureHandler.swift
 //  Hidive
 //
-//  Created by Alessandro Autiero on 26/07/24.
+//  StackOverflow: https://stackoverflow.com/a/76154592
 //
 
 import Foundation
@@ -13,12 +13,13 @@ extension UINavigationController: UIGestureRecognizerDelegate {
         super.viewDidLoad()
         interactivePopGestureRecognizer?.delegate = self
     }
-    
+
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return viewControllers.count > 1
     }
-    
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+
+    // To make it works also with ScrollView but not simultaneously
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         true
     }
 }

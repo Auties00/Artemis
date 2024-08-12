@@ -7,16 +7,21 @@
 
 import Foundation
 
-protocol Episodable {
-    var title: String {
-        get
-    }
-    
-    var description: String {
+protocol Episodable: Descriptable {
+    var posterUrl: ThumbnailEntry? {
         get
     }
     
     var episodes: [Episode]? {
+        get
+        set
+    }
+    
+    var paging: Paging? {
+        get
+    }
+    
+    var isSaved: Bool {
         get
     }
 }

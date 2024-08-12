@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+struct ResetPasswordRequest: Encodable {
+    let id: String
+    let provider: String
+}

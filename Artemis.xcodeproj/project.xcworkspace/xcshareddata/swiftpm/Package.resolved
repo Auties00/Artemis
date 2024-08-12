@@ -1,0 +1,41 @@
+{
+  "pins" : [
+    {
+      "identity" : "acarousel",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/JWAutumn/ACarousel",
+      "state" : {
+        "revision" : "8a322513580f21288fd87eb3a1341c247b3e2a76",
+        "version" : "0.2.0"
+      }
+    },
+    {
+      "identity" : "alerttoast",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elai950/AlertToast",
+      "state" : {
+        "revision" : "b39252eacd159904afd7d718bba0afabb87f2f2f",
+        "version" : "1.3.9"
+      }
+    },
+    {
+      "identity" : "m3ukit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/omaralbeik/M3UKit.git",
+      "state" : {
+        "revision" : "a84b4d72ddb3f6fcce78752bddd9ac8fe91bf94e",
+        "version" : "0.8.1"
+      }
+    },
+    {
+      "identity" : "welcome-sheet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/MAJKFL/Welcome-Sheet",
+      "state" : {
+        "branch" : "main",
+        "revision" : "93332013d3253bcf0f748a008400d542fb9c9c3e"
+      }
+    }
+  ],
+  "version" : 2
+}

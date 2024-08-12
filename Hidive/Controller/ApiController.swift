@@ -13,26 +13,24 @@ private let headers: [String: String] = [
     "X-Api-Key": "f086d846-37ed-4761-99ac-e538c03e5701",
     "X-App-Var": "2.5.1",
     "User-Agent": "HIDIVE/126 CFNetwork/1496.0.7 Darwin/23.5.0",
-    "realm": "dce.hidive"
+    "realm": "dce.hidive",
+    "X-Device-Id": "iPhone16,2"
 ]
 
 @Observable
-final class ApiController: ObservableObject {
-    private let encoder: JSONEncoder
-    private let decoder: JSONDecoder
-    init() {
-        self.encoder = JSONEncoder()
-        self.decoder = JSONDecoder()
-    }
+final class ApiController {
+    private let executor: ApiTaskExecutor = ApiTaskExecutor()
+    private let encoder: JSONEncoder = JSONEncoder()
+    private let decoder: JSONDecoder = JSONDecoder()
     
     var authorisationToken: String? {
         get {
             access(keyPath: \.authorisationToken)
-            return UserDefaults.standard.string(forKey: "authorisationToken123")
+            return UserDefaults.standard.string(forKey: "authorisationToken")
         }
         set {
             withMutation(keyPath: \.authorisationToken) {
-                UserDefaults.standard.setValue(newValue, forKey: "authorisationToken123")
+                UserDefaults.standard.setValue(newValue, forKey: "authorisationToken")
             }
         }
     }
@@ -40,11 +38,11 @@ final class ApiController: ObservableObject {
     var refreshToken: String? {
         get {
             access(keyPath: \.refreshToken)
-            return UserDefaults.standard.string(forKey: "refreshToken123")
+            return UserDefaults.standard.string(forKey: "refreshToken")
         }
         set {
             withMutation(keyPath: \.refreshToken) {
-                UserDefaults.standard.setValue(newValue, forKey: "refreshToken123")
+                UserDefaults.standard.setValue(newValue, forKey: "refreshToken")
             }
         }
     }
@@ -61,29 +59,41 @@ final class ApiController: ObservableObject {
         }
     }
     
+    func onLoggedIn() async {
+        await executor.markReady()
+    }
+    
     func hasTokens() -> Bool {
         return authorisationToken != nil && refreshToken != nil;
     }
     
-    func sendRequest<T : Decodable>(method: String, url: String? = nil, path: String = "", data: Encodable? = nil, log: Bool = false) async throws -> T {
+    func sendRequest<T : Decodable>(method: String, url: String? = nil, path: String = "", data: Encodable? = nil, additionalHeaders: [String:String]? = nil, log: Bool = false, requiresLogin: Bool = true) async throws -> T {
+        let response: Data = try await sendRequest(method: method, url: url, path: path, data: data, additionalHeaders: additionalHeaders, log: log, requiresLogin: requiresLogin)
         do {
-            let response: Data = try await sendRequest(method: method, url: url, path: path, data: data, log: log)
             return try decoder.decode(T.self, from: response)
-        }catch let error {
-            throw RequestError.invalidResponseData(error)
+        } catch DecodingError.dataCorrupted {
+            throw RequestError.decodeError("Corrupted data")
+        } catch let DecodingError.keyNotFound(key, context) {
+            throw RequestError.decodeError("Key '\(key.stringValue)' not found at \(context.codingPath)")
+        } catch let DecodingError.valueNotFound(value, context) {
+            throw RequestError.decodeError("Value '\(value)' not found at \(context.codingPath)")
+        } catch let DecodingError.typeMismatch(type, context)  {
+            throw RequestError.decodeError("Type mismatch for '\(type)' at \(context.codingPath)")
+        } catch {
+            throw RequestError.decodeError("Unknown error")
         }
     }
     
-    func sendRequest(method: String, url: String? = nil, path: String = "", data: Encodable? = nil, log: Bool = false) async throws -> String {
-        do {
-            let response: Data = try await sendRequest(method: method, url: url, path: path, data: data, log: log)
-            return String(data: response, encoding: .utf8)!
-        }catch let error {
-            throw RequestError.invalidResponseData(error)
-        }
+    func sendRequest(method: String, url: String? = nil, path: String = "", data: Encodable? = nil, additionalHeaders: [String:String]? = nil, log: Bool = false, requiresLogin: Bool = true) async throws -> String {
+        let response: Data = try await sendRequest(method: method, url: url, path: path, data: data, additionalHeaders: additionalHeaders, log: log, requiresLogin: requiresLogin)
+        return String(data: response, encoding: .utf8)!
     }
     
-    private func sendRequest(method: String, url: String? = nil, path: String = "", data: Encodable? = nil, log: Bool = false, isRetry: Bool = false) async throws -> Data {
+    private func sendRequest(method: String, url: String?, path: String, data: Encodable?, additionalHeaders: [String:String]?, log: Bool, requiresLogin: Bool, isRetry: Bool = false) async throws -> Data {
+        if(requiresLogin) {
+            await executor.wait()
+        }
+        
         let requestUrlSource = url ?? "\(endpoint)/\(path)"
         if(log) {
             print("Request: \(requestUrlSource)")
@@ -107,32 +117,39 @@ final class ApiController: ObservableObject {
         }
         
         var requestHeaders: [String: String] = self.prepareHeaders()
-        if(method == "POST") {
+        if(method == "POST" || method == "PUT") {
             requestHeaders["Content-Type"] = "application/json"
+        }
+        if let additionalHeaders = additionalHeaders {
+            requestHeaders = requestHeaders.merging(additionalHeaders, uniquingKeysWith: {(first, second) in second })
         }
         request.allHTTPHeaderFields = requestHeaders
         
-        guard let (responseBody, response) = try? await URLSession.shared.data(for: request) else {
-            throw RequestError.invalidConnection
-        }
+        let (responseBody, response) = try await URLSession.shared.data(for: request)
         
         if(log) {
-            print(String(data: responseBody, encoding: .utf8))
+            print("Response: \(String(data: responseBody, encoding: .utf8) ?? "<nothing>")")
         }
         
         if let httpResponse = response as? HTTPURLResponse {
             if(httpResponse.statusCode == 401) {
                 if(isRetry) {
-                    throw RequestError.invalidResponseData()
+                    throw RequestError.failedRefresh
                 }
                 
                 try await refreshToken()
                 return try await self.sendRequest(
                     method: method,
+                    url: url,
                     path: path,
                     data: data,
+                    additionalHeaders: additionalHeaders,
+                    log: log,
+                    requiresLogin: requiresLogin,
                     isRetry: true
                 )
+            }else if(!String(httpResponse.statusCode).starts(with: "20")) {
+                throw RequestError.invalidResponseStatusCode(httpResponse.statusCode)
             }
         }
         
@@ -164,5 +181,36 @@ final class ApiController: ObservableObject {
             requestHeaders["Authorization"] = "Bearer \(authorisationToken!)"
         }
         return requestHeaders
+    }
+}
+
+private actor ApiTaskExecutor {
+    private var ready: Bool
+    private var waiters: [CheckedContinuation<Void, Never>]
+    init() {
+        self.ready = false
+        self.waiters = []
+    }
+
+    func wait() async {
+        if(ready) {
+            return
+        }
+        
+        await withCheckedContinuation {
+            waiters.append($0)
+        }
+    }
+
+    func markReady() {
+        if(ready) {
+            return
+        }
+    
+        self.ready = true
+        for waiter in waiters {
+            waiter.resume()
+        }
+        waiters.removeAll()
     }
 }

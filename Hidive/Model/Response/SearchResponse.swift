@@ -32,7 +32,8 @@ struct SearchEntry: Decodable, Identifiable, Hashable {
     let description: String
     let coverUrl: String
     let smallCoverUrl: String
-    let seasonsCount: Int
+    let seasonsCount: Int?
+    let videosCount: Int?
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)

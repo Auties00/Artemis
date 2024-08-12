@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+struct RegistrationResponse: Decodable {
+    let status: Int?
+    let code: String?
+    let authorisationToken: String?
+    let refreshToken: String?
+}

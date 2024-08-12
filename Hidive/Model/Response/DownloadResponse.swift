@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct DownloadResponse: Decodable {
+    let videoId: Int
+    let playerUrlCallback: String
+    let downloadId: String
+}

@@ -9,33 +9,47 @@ import SwiftUI
 import AVKit
 import UIKit
 
-class EpisodePlayerController: AVPlayerViewController, AVAssetResourceLoaderDelegate {
-    private let defaultUrlScheme: String = "https"
-    private let playlistUrlScheme: String = "playlist"
-    private let subtitlesUrlScheme: String = "subtitles"
-    private let fairplayUrlScheme: String = "skd"
-    private let m3u8Extension = "m3u8"
-    private let vttExtension = "vtt"
-    
-    private var episodable: Episodable!
-    private var episode: Descriptable
-    private var nextEpisodes: [Descriptable & Validatable]
+class EpisodePlayer: AVPlayerViewController {
+    private var playerId: String
+    private var episodable: (any Episodable)!
+    private var episode: Episode
+    private var nextEpisodes: [Episode]
+    private let accountController: AccountController
     private let animeController: AnimeController
-    private let encoder: JSONEncoder
-    private let decoder: JSONDecoder
-    private var hlsStream: PlaybackEntry!
+    private let onDismiss: ((Episode) -> Void)?
     private var nextButton: UIView?
+    private var lastNextButtonClick: TimeInterval!
+    private var asset: AVURLAsset!
+    private var subtitlesInjector: AVAssetResourceLoaderDelegate!
+    private var fairplaySession: AVContentKeySession!
+    private var fairplayHandler: AVContentKeySessionDelegate!
+    private var statusObserver: NSObject?
+    private var languageObserver: (any NSObjectProtocol)?
+    private var watchProgressObserver: Any?
     
-    init(episodable: (any Episodable)?, episode: Episode, animeController: AnimeController) {
+    static func open(episodable: Episodable?, episode: Episode, nextEpisodes: [Episode]? = nil, accountController: AccountController, animeController: AnimeController, onDismiss: ((Episode) -> Void)? = nil) {
+        let scene = UIApplication.shared.connectedScenes
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+
+        let rootViewController = scene?
+            .windows.first(where: { $0.isKeyWindow })?
+            .rootViewController
+        
+        let player = EpisodePlayer(episodable: episodable, episode: episode, nextEpisodes: nextEpisodes, accountController: accountController, animeController: animeController, onDismiss: onDismiss)
+        rootViewController?.present(player, animated: true)
+    }
+    
+    private init(episodable: Episodable?, episode: Episode, nextEpisodes: [Episode]? = nil, accountController: AccountController, animeController: AnimeController, onDismiss: ((Episode) -> Void)?) {
+        self.playerId = UUID().uuidString
         self.episodable = episodable
         self.episode = episode
+        self.accountController = accountController
         self.animeController = animeController
-        self.nextEpisodes = []
-        self.encoder = JSONEncoder()
-        self.decoder = JSONDecoder()
+        self.nextEpisodes = nextEpisodes ?? []
+        self.onDismiss = onDismiss
         super.init(nibName: nil, bundle: nil)
         self.entersFullScreenWhenPlaybackBegins = true
-        self.exitsFullScreenWhenPlaybackEnds = true
+        self.exitsFullScreenWhenPlaybackEnds = false
         self.allowsPictureInPicturePlayback = true
         self.canStartPictureInPictureAutomaticallyFromInline = true
     }
@@ -43,122 +57,300 @@ class EpisodePlayerController: AVPlayerViewController, AVAssetResourceLoaderDele
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
-        Task.detached {
+        Task {
             await self.preparePlayer()
         }
     }
     
     private func preparePlayer() async {
-        do {
-            let vod = try await self.animeController.getVod(id: self.episode.id)
-            if(self.episodable == nil) {
-                let episodable = try await self.animeController.getSeason(id: vod.episodeInformation!.season)
-                await MainActor.run {
-                    self.episodable = episodable
+        guard let playerItem = await createPlayerItem() else {
+            return
+        }
+        
+        if(self.nextEpisodes.isEmpty) {
+            if let response = try? await self.animeController.getAdjacentEpisodes(id: self.episode.id) {
+                if let nextEpisodes = response.following {
+                    self.nextEpisodes.append(contentsOf: nextEpisodes)
                 }
             }
-            
-            if(self.nextEpisodes.isEmpty) {
-                let vodsResponse = try await self.animeController.getAdjacentVods(id: self.episode.id)
-                if let nextVods = vodsResponse.followingVods {
-                    self.nextEpisodes.append(contentsOf: nextVods)
-                }
-            }
-            
-            let playback = try await self.animeController.getPlayback(vod: vod)
-            let result = playback.hls.first { $0.drm.keySystems.contains("FAIRPLAY") }!
-            await MainActor.run {
-                self.hlsStream = result
-            }
-            
-            guard let assetUrl = URL(string: self.hlsStream.url.replacing(self.defaultUrlScheme, with: self.playlistUrlScheme, maxReplacements: 1)) else {
+        }
+        
+        self.statusObserver = playerItem.observe(\.status) { item, _ in
+            self.handleStatus(item: item)
+        }
+        
+        self.languageObserver = NotificationCenter.default.addObserver(forName: AVPlayerItem.mediaSelectionDidChangeNotification, object: playerItem, queue: OperationQueue.main) { data in
+            guard let item = data.object as? AVPlayerItem else {
                 return
             }
             
-            let asset = AVURLAsset(url: assetUrl)
-            asset.resourceLoader.setDelegate(self, queue: DispatchQueue(label: "resourceLoader"))
-            let playerItem = AVPlayerItem(asset: asset)
-            
-            let artworkItem = AVMutableMetadataItem()
-            artworkItem.identifier = .commonIdentifierArtwork
-            
-            if let thumbnail = try await ImageCache.shared.getImageData(url: self.episode.coverUrl) {
-                artworkItem.value = thumbnail as NSData
-                artworkItem.dataType = kCMMetadataBaseDataType_JPEG as String
-                playerItem.externalMetadata.append(artworkItem)
+            self.handleLanguage(item: item)
+        }
+        
+        await beautifyPlayerItem(playerItem: playerItem)
+        
+        if(self.player == nil) {
+            let player = AVPlayer(playerItem: playerItem)
+            let interval = CMTime(seconds: 15, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+            self.watchProgressObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { time in
+                self.saveProgress(last: false)
             }
             
-            
-            let titleItem = AVMutableMetadataItem()
-            titleItem.identifier = .commonIdentifierTitle
-            titleItem.value = self.episode.title as NSString
-            playerItem.externalMetadata.append(titleItem)
-            
-            let seriesItem = AVMutableMetadataItem()
-            seriesItem.identifier = .iTunesMetadataTrackSubTitle
-            seriesItem.value = self.episodable.parentTitle as NSString
-            seriesItem.locale = Locale.current
-            playerItem.externalMetadata.append(seriesItem)
-            
-            playerItem.addObserver(self, forKeyPath: "status", options: .new, context: nil)
-            
-            if(self.player == nil) {
-                let player = AVPlayer(playerItem: playerItem)
-                player.appliesMediaSelectionCriteriaAutomatically = true
+            player.actionAtItemEnd = .none
+            player.appliesMediaSelectionCriteriaAutomatically = true
+            await MainActor.run {
+                self.player = player
+            }
+            NotificationCenter.default.addObserver(self, selector: #selector(onNext), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+        }else {
+            nextButton?.removeFromSuperview()
+            self.player?.replaceCurrentItem(with: playerItem)
+        }
+        
+        if let watchProgress = episode.watchProgress {
+            await self.player?.seek(to: CMTime(value: Int64(watchProgress), timescale: 1))
+        }
+        
+        let audioSession = AVAudioSession.sharedInstance()
+        try? audioSession.setCategory(.playback)
+        try? audioSession.setActive(true, options: [])
+        
+        self.player?.play()
+    }
+    
+    private nonisolated func handleStatus(item: AVPlayerItem) {
+        Task {
+            switch(item.status) {
+            case .readyToPlay:
+                await self.addNextButton()
+                await self.configurePlayerItemLocale(playerItem: item)
+            case .failed:
                 await MainActor.run {
-                    self.player = player
+                    self.showError(error: item.error?.localizedDescription ?? "Unknown error")
                 }
-            }else {
-                self.player?.replaceCurrentItem(with: playerItem)
+            default:
+                break
+            }
+        }
+    }
+    
+    private nonisolated func handleLanguage(item: AVPlayerItem) {
+        Task {
+            var audioLocale: String?
+            if let audioGroup = try? await item.asset.loadMediaSelectionGroup(for: AVMediaCharacteristic.audible) {
+                let selectedOption = item.currentMediaSelection.selectedMediaOption(in: audioGroup)
+                audioLocale = selectedOption?.locale?.identifier
             }
             
-            let audioSession = AVAudioSession.sharedInstance()
-            try audioSession.setCategory(.playback)
-            try audioSession.setActive(true, options: [])
-            self.player?.play()
-        }catch let error {
-            print("Error: \(error)")
+            guard let audioLocale = audioLocale else {
+                return
+            }
+            
+            var subtitlesLocale: String?
+            if let subtitlesGroup = try? await item.asset.loadMediaSelectionGroup(for: AVMediaCharacteristic.legible) {
+                let selectedOption = item.currentMediaSelection.selectedMediaOption(in: subtitlesGroup)
+                subtitlesLocale = selectedOption?.locale?.identifier
+            }
+            
+            if case .success(let profile) = accountController.profile, let profile = profile {
+                profile.preferences.audioLanguage = audioLocale
+                profile.preferences.subtitlesLanguage = subtitlesLocale ?? "false"
+                try? await accountController.updateProfile(profile: profile)
+            }
+        }
+    }
+    
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.dismiss(animated: flag) {
+            if let watchProgressObserver = self.watchProgressObserver {
+                self.player?.removeTimeObserver(watchProgressObserver)
+                self.watchProgressObserver = nil
+            }
+            
+            self.saveProgress(last: true)
+            
+            self.statusObserver = nil
+            self.languageObserver = nil
+            
+            self.accountController.addContinueWatching(episode: self.episode)
+            self.onDismiss?(self.episode)
+            
+            completion?()
+        }
+    }
+    
+    private func createPlayerItem() async -> AVPlayerItem? {
+        if let localFile = OfflineResourceSaver.getResource(id: episode.id) {
+            let asset = AVURLAsset(url: localFile)
+            let playerItem = AVPlayerItem(asset: asset)
+            let resource = FairplayResource.offlinePlayback(playerItem)
+            self.subtitlesInjector = SubtitlesResourceInjector(resource: resource)
+            self.fairplaySession = AVContentKeySession(keySystem: .fairPlayStreaming)
+            fairplaySession.addContentKeyRecipient(asset)
+            asset.resourceLoader.preloadsEligibleContentKeys = true
+            asset.resourceLoader.setDelegate(subtitlesInjector, queue: DispatchQueue.main)
+            fairplayHandler = FairplayContentKeySessionHandler(resource: resource)
+            fairplaySession.setDelegate(fairplayHandler, queue: DispatchQueue.main)
+            
+            return playerItem
+        }else {
+            guard let episode = try? await self.animeController.getEpisode(id: self.episode.id, includePlayback: true) else {
+                showError(error: "Cannot query episode")
+                return nil
+            }
+            
+            if self.episodable == nil, let episodeInformation = episode.episodeInformation {
+                await MainActor.run {
+                    self.episodable = episodeInformation.season
+                }
+            }
+            
+            guard let hlsStream = try? await self.animeController.getFairplayPlayback(episode: episode) else {
+                showError(error: "Cannot query hls stream")
+                return nil
+            }
+            
+            guard let asset = FairplayContentKeySessionHandler.createAsset(hlsStream: hlsStream) else {
+                showError(error: "Cannot create hls stream asset")
+                return nil
+            }
+            
+            let playerItem = AVPlayerItem(asset: asset)
+            let resource = FairplayResource.onlinePlayback(hlsStream, playerItem)
+            self.subtitlesInjector = SubtitlesResourceInjector(resource: resource)
+            self.fairplaySession = AVContentKeySession(keySystem: .fairPlayStreaming)
+            fairplaySession.addContentKeyRecipient(asset)
+            asset.resourceLoader.preloadsEligibleContentKeys = true
+            asset.resourceLoader.setDelegate(subtitlesInjector, queue: DispatchQueue.main)
+            fairplayHandler = FairplayContentKeySessionHandler(resource: resource)
+            fairplaySession.setDelegate(fairplayHandler, queue: DispatchQueue.main)
+            
+            return playerItem
+        }
+    }
+    
+    private func beautifyPlayerItem(playerItem: AVPlayerItem) async {
+        let artworkItem = AVMutableMetadataItem()
+        artworkItem.identifier = .commonIdentifierArtwork
+        if let thumbnail = try? await ImageCache.shared.getImageData(url: self.episode.coverUrl) {
+            artworkItem.value = thumbnail as NSData
+            artworkItem.dataType = kCMMetadataBaseDataType_JPEG as String
+            playerItem.externalMetadata.append(artworkItem)
+        }
+        
+        let titleItem = AVMutableMetadataItem()
+        titleItem.identifier = .commonIdentifierTitle
+        titleItem.value = self.episode.title as NSString
+        playerItem.externalMetadata.append(titleItem)
+        
+        let seriesItem = AVMutableMetadataItem()
+        seriesItem.identifier = .iTunesMetadataTrackSubTitle
+        seriesItem.value = self.episodable.parentTitle as NSString
+        seriesItem.locale = Locale.current
+        playerItem.externalMetadata.append(seriesItem)
+    }
+    
+    private func configurePlayerItemLocale(playerItem: AVPlayerItem) async {
+        if let offlineAudioLanguage = UserDefaults.standard.string(forKey: AccountController.offlineAudioLanguageKey) {
+            if let group = try? await playerItem.asset.loadMediaSelectionGroup(for: .audible) {
+                if let option = AVMediaSelectionGroup.mediaSelectionOptions(from: group.options, with: Locale(identifier: offlineAudioLanguage)).first {
+                    playerItem.select(option, in: group)
+                }
+            }
+        }
+        
+        if let offlineSubtitlesLanguage = UserDefaults.standard.string(forKey: AccountController.offlineSubtitlesLanguageKey) {
+            if let group = try? await playerItem.asset.loadMediaSelectionGroup(for: .legible) {
+                if let option = AVMediaSelectionGroup.mediaSelectionOptions(from: group.options, with: Locale(identifier: offlineSubtitlesLanguage)).first {
+                    playerItem.select(option, in: group)
+                }
+            }
         }
     }
     
     private func addNextButton() {
-        guard let controlsView = self.findView(parent: self.view, targetName: "AVMobileChromelessVolumeControlsView") else {
+        // The HStack of buttons at the top left
+        guard let controlsView = self.findView(parent: self.view, targetName: "AVMobileChromelessDisplayModeControlsView") else {
             return
         }
         
-        guard let controlsContainerView = self.findView(parent: controlsView, targetName: "AVMobileChromelessFluidSlider") ?? nextButton else {
+        // The parent of the top left controls, which contains all the AVPlayer controls
+        guard let controlsViewParent = controlsView.superview else {
             return
         }
         
-        guard let controlsContainerParentView = controlsContainerView.superview else {
+        // The container, and theoretically only view, in controlsView, used to wrap the three buttons (close, pip, cast)
+        guard let controlsContainerView = self.findView(parent: controlsView, targetName: "AVMobileChromelessContainerView") else {
             return
         }
         
-        controlsContainerView.removeFromSuperview()
-        guard let nextEpisode = nextEpisodes.first, nextEpisode.isValid else {
-            controlsContainerParentView.layoutIfNeeded()
+        // Check if another episode exist, otherwise don't create the button
+        guard let nextEpisode = self.nextEpisodes.first, nextEpisode.isValid else {
             return
         }
         
-        let button: UIButton = UIButton(frame: controlsContainerParentView.frame)
-        print(controlsContainerParentView.frame)
+        // Create the button and add it to controlsView so it matches the animation of the other buttons
+        let button: UIButton = UIButton()
+        self.nextButton = button
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .clear
-        button.setImage(UIImage(systemName: "forward.end", withConfiguration: UIImage.SymbolConfiguration(weight: .bold)), for: .normal)
+        button.setImage(UIImage(systemName: "forward.end", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold)), for: .normal)
         button.tintColor = .white
-        nextButton = button
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(self.onNext))
-        button.addGestureRecognizer(gesture)
-        controlsContainerParentView.addSubview(button)
-        controlsContainerParentView.didAddSubview(button)
+        controlsView.addSubview(button)
+        controlsView.didAddSubview(button)
+        NSLayoutConstraint.activate([
+            button.leadingAnchor.constraint(equalTo: controlsContainerView.trailingAnchor, constant: 22),
+            button.centerYAnchor.constraint(equalTo: controlsContainerView.centerYAnchor),
+            button.widthAnchor.constraint(equalToConstant: 30)
+        ])
+        
+        // Now create a ghost above the button we just created
+        // This has to be done because controlsContainerView's dimensions are inherited from controlsView, which gets resized by AVPlayer
+        // If our button is outside controlsView's bounds, then we can't interact with it
+        // Listening to the size change, and applying a width extension to fix this issue is possible with KVO, but Apple says not to rely on it, so this solution is probably better
+        let passthrough = UIButton()
+        passthrough.translatesAutoresizingMaskIntoConstraints = false
+        passthrough.backgroundColor = .clear
+        let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.onLongNext))
+        longGesture.minimumPressDuration = 0
+        passthrough.addGestureRecognizer(longGesture)
+        controlsViewParent.addSubview(passthrough)
+        controlsViewParent.didAddSubview(passthrough)
+        NSLayoutConstraint.activate([
+            passthrough.leadingAnchor.constraint(equalTo: controlsContainerView.trailingAnchor, constant: 22),
+            passthrough.centerYAnchor.constraint(equalTo: controlsContainerView.centerYAnchor),
+            passthrough.widthAnchor.constraint(equalToConstant: 30)
+        ])
+    }
+    
+    @objc
+    private func onLongNext(gestureReconizer: UILongPressGestureRecognizer) {
+        switch(gestureReconizer.state) {
+        case .began:
+            lastNextButtonClick = Date.timeIntervalSinceReferenceDate
+            self.nextButton?.transform = CGAffineTransformMakeScale(0.75, 0.75)
+        case .ended:
+            if(Date.timeIntervalSinceReferenceDate - lastNextButtonClick < 0.1) {
+                onNext()
+            }
+            
+            self.nextButton?.transform = CGAffineTransform.identity
+        default:
+            break
+        }
     }
     
     @objc
     private func onNext() {
+        guard let nextEpisode = self.nextEpisodes.first, nextEpisode.isValid else {
+            return
+        }
+        
         player?.pause()
         self.episode = nextEpisodes.removeFirst()
-        Task.detached {
+        Task {
             await self.preparePlayer()
         }
     }
@@ -184,263 +376,45 @@ class EpisodePlayerController: AVPlayerViewController, AVAssetResourceLoaderDele
         return nil
     }
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let playerItem = object as? AVPlayerItem else {
-            return
-        }
-        
-        if(keyPath != "status") {
-            return
-        }
-        
-        switch(playerItem.status) {
-        case .readyToPlay:
-            self.addNextButton()
-        case .failed:
-            print("ERROR: \(playerItem.error?.localizedDescription ?? "unknown")")
-        default:
-            print("Unknown state")
-        }
-    }
-    
-    private func printView(view: UIView, level: Int) {
-        for child in view.subviews {
-            print("\(String(repeating: "  ", count: level)) -> \(String(describing: child))")
-            printView(view: child, level: level + 1)
-        }
-    }
-    
-    func resourceLoader(_ resourceLoader: AVAssetResourceLoader, didCancel authenticationChallenge: URLAuthenticationChallenge) {
-        fatalError("Authentication is not supported")
-    }
-    
-    func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForResponseTo authenticationChallenge: URLAuthenticationChallenge) -> Bool {
-        fatalError("Authentication is not supported")
-    }
-    
-    func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForRenewalOfRequestedResource renewalRequest: AVAssetResourceRenewalRequest) -> Bool {
-        fatalError("Renewal is not supported")
-    }
-    
-    
-    func resourceLoader(_ resourceLoader: AVAssetResourceLoader, didCancel loadingRequest: AVAssetResourceLoadingRequest) {
-        let _ = handleResource(loadingRequest: loadingRequest)
-    }
-    
-    func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-        return handleResource(loadingRequest: loadingRequest)
-    }
-    
-    private func handleResource(loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-        guard let url = loadingRequest.request.url else {
-            return false
-        }
-        
-        switch(url.scheme) {
-        case playlistUrlScheme:
-            return handleAsset(loadingRequest: loadingRequest)
-        case subtitlesUrlScheme:
-            return handleSubtitles(url: url, loadingRequest: loadingRequest)
-        case fairplayUrlScheme:
-            return handleFairplay(url: url, loadingRequest: loadingRequest)
-        default:
-            return false
-        }
-    }
-    
-    private func handleAsset(loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-        guard let assetLocation = loadingRequest.request.url?.absoluteString.replacing(playlistUrlScheme, with: defaultUrlScheme, maxReplacements: 1) else {
-            return false
-        }
-        
-        guard let assetUrl = URL(string: assetLocation) else {
-            return false
-        }
-        
-        if(assetUrl.pathExtension == m3u8Extension) {
-            return handleM3u8Resource(assetUrl: assetUrl, loadingRequest: loadingRequest)
-        } else {
-            return handleRedirectedResource(assetUrl: assetUrl, loadingRequest: loadingRequest)
-        }
-    }
-    
-    private func handleSubtitles(url: URL, loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-        let duration = self.player?.currentItem?.duration.seconds ?? 0
-        let subtitlem3u8 = """
-     #EXTM3U
-     #EXT-X-VERSION:3
-     #EXT-X-MEDIA-SEQUENCE:1
-     #EXT-X-PLAYLIST-TYPE:VOD
-     #EXT-X-ALLOW-CACHE:NO
-     #EXT-X-TARGETDURATION:\(Int(duration))
-     #EXTINF:\(String(format: "%.3f", duration)), no desc
-     \(url.absoluteString.replacing(subtitlesUrlScheme, with: defaultUrlScheme, maxReplacements: 1).replacing(".\(m3u8Extension)", with: ".\(vttExtension)", maxReplacements: 1))
-     #EXT-X-ENDLIST
-     """
-        guard let subtitlem3u8Data = subtitlem3u8.data(using: .utf8) else {
-            return false
-        }
-        
-        loadingRequest.dataRequest?.respond(with: subtitlem3u8Data)
-        loadingRequest.finishLoading()
-        return true
-    }
-    
-    private func handleM3u8Resource(assetUrl: URL, loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-        var request = URLRequest(url: assetUrl)
-        request.httpMethod = "GET"
-        request.allHTTPHeaderFields = animeController.getVodHeaders()
-        let dataTask = URLSession.shared.dataTask(with: request, completionHandler: { (responseData, response, error) in
-            if(error != nil) {
-                loadingRequest.finishLoading(with: error)
+    private nonisolated func saveProgress(last: Bool) {
+        Task {
+            guard let playerItem = await self.player?.currentItem else {
                 return
             }
             
-            if let m3u8HttpResponse = response as? HTTPURLResponse {
-                if(m3u8HttpResponse.statusCode != 200) {
-                    loadingRequest.finishLoading(with: NSError(domain: "m3u8Request", code: m3u8HttpResponse.statusCode))
-                    return
-                }
-            }
-            
-            guard responseData != nil, let m3u8: String = String(data: responseData!, encoding: .utf8) else {
-                loadingRequest.finishLoading(with: NSError(domain: "m3u8Response", code: -2))
+            let playing = await self.player?.timeControlStatus == .playing
+            if(!last && !playing) {
                 return
             }
             
-            var m3u8WithSubtitles = ""
-            for line in m3u8.split(separator: "\n") {
-                if(line.starts(with: "#EXT-X-INDEPENDENT-SEGMENTS")) {
-                    m3u8WithSubtitles += line
-                    m3u8WithSubtitles += "\n"
-                    let locale: Locale = .current
-                    for subtitle in self.hlsStream.subtitles {
-                        if subtitle.format == self.vttExtension {
-                            let subtitlesName = locale.localizedString(forIdentifier: subtitle.language) ?? subtitle.language
-                            let subtitlesUrl = subtitle.url
-                                .replacing(self.defaultUrlScheme, with: self.subtitlesUrlScheme, maxReplacements: 1)
-                                .replacing(".\(self.vttExtension)", with: ".\(self.m3u8Extension)", maxReplacements: 1)
-                            m3u8WithSubtitles += "#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"subs\",NAME=\"\(subtitlesName)\",LANGUAGE=\"\(subtitle.language)\",URI=\"\(subtitlesUrl)\""
-                            m3u8WithSubtitles += "\n"
-                        }
-                    }
-                }else if(line.starts(with: "#EXT-X-STREAM-INF:")) {
-                    m3u8WithSubtitles += "\(line),SUBTITLES=\"subs\""
-                    m3u8WithSubtitles += "\n"
-                }else {
-                    m3u8WithSubtitles += line
-                    m3u8WithSubtitles += "\n"
-                }
+            if let progress = await self.player?.currentTime().seconds {
+                await self.episode.watchProgress = Int(progress)
+                await self.episode.watchedAt = Date.now.millisecondsSince1970
             }
             
-            guard let m3u8Data = m3u8WithSubtitles.data(using: .utf8) else {
-                loadingRequest.finishLoading(with: NSError(domain: "m3u8Response", code: -3))
-                return
-            }
-            
-            loadingRequest.dataRequest?.respond(with: m3u8Data)
-            loadingRequest.finishLoading()
+            let episodeId = await self.episode.id
+            let progress = Int(playerItem.currentTime().seconds)
+            try? await animeController.saveWatchProgress(cid: playerId, id: episodeId, progress: progress, last: last)
+        }
+    }
+    
+    private func showError(error: String) {
+        let alert = UIAlertController(title: "Player Error", message: error, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Close", style: .cancel) { _ in
+            self.dismiss(animated: false)
         })
-        dataTask.resume()
-        return true
+        self.present(alert, animated: true)
     }
     
-    private func handleRedirectedResource(assetUrl: URL, loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-        var request = URLRequest(url: assetUrl)
-        request.httpMethod = "GET"
-        request.allHTTPHeaderFields = animeController.getVodHeaders()
-        loadingRequest.redirect = request
-        loadingRequest.response = HTTPURLResponse(url: assetUrl, statusCode: 302, httpVersion: nil, headerFields: nil)
-        loadingRequest.finishLoading()
-        return true
-    }
-    
-    private func handleFairplay(url: URL, loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-        do {
-            guard let contentIdentifier = url.host else {
-                return false
-            }
-            
-            guard let contentIdentifierData = contentIdentifier.data(using: .utf8) else {
-                return false
-            }
-            
-            guard let drmUrl = URL(string: hlsStream.drm.url) else {
-                return false
-            }
-            
-            let authHeader = "Bearer \(self.hlsStream.drm.jwtToken)"
-            
-            var certificateRequest = URLRequest(url: drmUrl)
-            certificateRequest.httpMethod = "GET"
-            certificateRequest.setValue(authHeader, forHTTPHeaderField: "Authorization")
-            let drmInfo = DRMInfoRequest(system: "com.apple.fps.1_0", keyIds: nil)
-            let encodedDrmInfo = try self.encoder.encode(drmInfo)
-            certificateRequest.setValue(encodedDrmInfo.base64EncodedString(), forHTTPHeaderField: "X-Drm-Info")
-            
-            let dataTask = URLSession.shared.dataTask(with: certificateRequest, completionHandler: { (certificateResponseData, certificateResponse, certificateError) in
-                do {
-                    if(certificateError != nil) {
-                        loadingRequest.finishLoading(with: certificateError)
-                        return
-                    }
-                    
-                    if let certificateHttpResponse = certificateResponse as? HTTPURLResponse {
-                        if(certificateHttpResponse.statusCode != 200) {
-                            loadingRequest.finishLoading(with: NSError(domain: "certificateRequest", code: certificateHttpResponse.statusCode))
-                            return
-                        }
-                    }
-                    
-                    guard certificateResponseData != nil, let certificateDecodedData = Data(base64Encoded: certificateResponseData!) else {
-                        loadingRequest.finishLoading(with: NSError(domain: "certificateResponse", code: -2))
-                        return
-                    }
-                    
-                    let spcData = try loadingRequest.streamingContentKeyRequestData(forApp: certificateDecodedData, contentIdentifier: contentIdentifierData)
-                    var licenseRequest = URLRequest(url: drmUrl)
-                    licenseRequest.httpMethod = "POST"
-                    licenseRequest.setValue(authHeader, forHTTPHeaderField: "Authorization")
-                    licenseRequest.setValue(authHeader, forHTTPHeaderField: "CustomData")
-                    let drmInfo = DRMInfoRequest(system: "com.apple.fps.1_0", keyIds: [contentIdentifier])
-                    let encodedDrmInfo = try self.encoder.encode(drmInfo)
-                    licenseRequest.setValue(encodedDrmInfo.base64EncodedString(), forHTTPHeaderField: "X-Drm-Info")
-                    licenseRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-                    let drmChallenge = DRMChallengeRequest(challenge: spcData.base64EncodedString())
-                    let encodedDrmChallenge = try self.encoder.encode(drmChallenge)
-                    licenseRequest.httpBody = encodedDrmChallenge
-                    let dataTask = URLSession.shared.dataTask(with: licenseRequest, completionHandler: { (licenseResponseData, licenseResponse, licenseError) in
-                        do {
-                            
-                            if(licenseError != nil) {
-                                loadingRequest.finishLoading(with: licenseError)
-                                return
-                            }
-                            
-                            if let licenseHttpResponse = licenseError as? HTTPURLResponse {
-                                if(licenseHttpResponse.statusCode != 200) {
-                                    loadingRequest.finishLoading(with: NSError(domain: "licenseRequest", code: licenseHttpResponse.statusCode))
-                                    return
-                                }
-                            }
-                            
-                            let drmResponse = try self.decoder.decode(DRMResponse.self, from: licenseResponseData!)
-                            loadingRequest.dataRequest?.respond(with: drmResponse.response)
-                            loadingRequest.finishLoading()
-                        }catch let error {
-                            loadingRequest.finishLoading(with: error)
-                        }
-                    })
-                    dataTask.resume()
-                }catch let error {
-                    loadingRequest.finishLoading(with: error)
-                }
-            })
-            dataTask.resume()
-            return true
-        }catch let error {
-            loadingRequest.finishLoading(with: error)
-            return false
-        }
-    }
+    /*
+     Used during development for the next button
+     The XCode debugger is so slow :/
+     
+     private func printView(view: UIView, level: Int) {
+         for child in view.subviews {
+             print("\(String(repeating: "  ", count: level)) -> \(String(describing: child))")
+             printView(view: child, level: level + 1)
+         }
+     }
+     */
 }

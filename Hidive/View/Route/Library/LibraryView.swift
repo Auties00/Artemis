@@ -11,60 +11,40 @@ struct LibraryView: View {
     var body: some View {
         TabNavigationView(title: "Library") {
             List {
-                NavigationLink(value: PageType.library(.favourites)) {
-                    HStack {
-                        Image(systemName: "list.star")
-                            .resizable()
-                            .foregroundColor(.accentColor)
-                            .frame(width: 20, height: 20)
-                        Spacer()
-                            .frame(width: 12)
-                        Text("Watchlists")
-                            .font(.title2)
-                    }
-                }
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets())
-                .buttonStyle(PlainButtonStyle())
-                .frame(maxWidth: .infinity)
-                .padding(.top, 12)
+                item(destination: .watchlists, icon: "list.star", label: "Watchlists")
+
+                item(destination: .history, icon: "clock", label: "History")
+
+                item(destination: .downloads, icon: "arrow.down", label: "Downloads")
                 
-                NavigationLink(value: PageType.library(.history)) {
-                    HStack {
-                        Image(systemName: "clock")
-                            .resizable()
-                            .foregroundColor(.accentColor)
-                            .frame(width: 20, height: 20)
-                        Spacer()
-                            .frame(width: 12)
-                        Text("History")
-                            .font(.title2)
-                    }
-                }
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets())
-                .buttonStyle(PlainButtonStyle())
-                .frame(maxWidth: .infinity)
-                
-                NavigationLink(value: PageType.library(.downloads)) {
-                    HStack {
-                        Image(systemName: "arrow.down")
-                            .resizable()
-                            .foregroundColor(.accentColor)
-                            .frame(width: 20, height: 20)
-                        Spacer()
-                            .frame(width: 12)
-                        Text("Downloads")
-                            .font(.title2)
-                    }
-                }
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets())
-                .buttonStyle(PlainButtonStyle())
-                .frame(maxWidth: .infinity)
+                // Used to make the previous item's separator visible
+                Spacer()
+                    .frame(width: 0, height: 0)
+                    .listRowBackground(Color.clear)
             }
             .listRowSeparator(.visible)
-            .scrollContentBackground(.hidden)
         }
+    }
+    
+    @ViewBuilder
+    private func item(destination: LibraryPageType, icon: String, label: String) -> some View {
+        NavigationLink(value: NestedPageType.library(destination)) {
+            HStack {
+                Image(systemName: icon)
+                    .resizable()
+                    .foregroundColor(.accentColor)
+                    .frame(width: 22, height: 22)
+                Spacer()
+                    .frame(width: 16)
+                Text(label)
+                    .font(.title2)
+            }
+        }
+        .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets())
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical)
+        .padding(.trailing)
     }
 }

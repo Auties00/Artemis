@@ -8,16 +8,61 @@
 import SwiftUI
 
 struct ErrorView: View {
-    private let error: Error
+    private let title: String
+    private let description: String
+    private let systemImage: String
+    private let showDownloads: Bool
+    @Environment(RouterController.self)
+    private var routerController: RouterController
     init(error: Error) {
-        self.error = error
+        if(error.isNoConnectionError) {
+            self.init(
+                title: "No Internet Connection",
+                description: "Please check your connection and try again",
+                systemImage: "wifi.exclamationmark",
+                showDownloads: true
+            )
+        }else {
+            let localizedError = LocalizedErrorWrapper(error: error)
+            let title = localizedError.recoverySuggestion == nil ? "Unknown error" : localizedError.localizedDescription
+            let description = if let recoverySuggestion = localizedError.recoverySuggestion {
+                recoverySuggestion
+            }else {
+                localizedError.localizedDescription
+            }
+            self.init(
+                title: title,
+                description: description
+            )
+        }
+    }
+    
+    init(title: String, description: String, systemImage: String = "exclamationmark.triangle.fill", showDownloads: Bool = false) {
+        self.title = title
+        self.description = description
+        self.systemImage = systemImage
+        self.showDownloads = showDownloads
     }
     
     var body: some View {
-        let localizedError = LocalizedErrorWrapper(error: error)
-        InformationView(
-            title: localizedError.localizedDescription,
-            description: localizedError.recoverySuggestion ?? ""
+        ContentUnavailableView(
+            label: {
+                Label(
+                    title,
+                    systemImage: systemImage
+                )
+            },
+            description: {
+                Text(description)
+            },
+            actions: {
+                if(showDownloads) {
+                    Button("Show Downloads") {
+                        routerController.path.append(NestedPageType.library(.downloads))
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
         )
     }
 }

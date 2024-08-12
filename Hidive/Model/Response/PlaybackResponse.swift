@@ -10,6 +10,30 @@ import Foundation
 struct Playback: Decodable {
     let dash: [PlaybackEntry]
     let hls: [PlaybackEntry]
+    
+    enum CodingKeys: CodingKey {
+        case dash
+        case hls
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if let dash = try? container.decodeIfPresent([PlaybackEntry].self, forKey: .dash) {
+            self.dash = dash
+        }else if let dash = try? container.decodeIfPresent(PlaybackEntry.self, forKey: .dash) {
+            self.dash = [dash]
+        }else {
+            self.dash = []
+        }
+        
+        if let hls = try? container.decodeIfPresent([PlaybackEntry].self, forKey: .hls) {
+            self.hls = hls
+        }else if let hls = try? container.decodeIfPresent(PlaybackEntry.self, forKey: .hls) {
+            self.hls = [hls]
+        }else {
+            self.hls = []
+        }
+    }
 }
 
 struct PlaybackEntry: Decodable  {

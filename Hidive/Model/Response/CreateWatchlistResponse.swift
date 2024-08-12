@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+struct CreateWatchlistResponse: Decodable {
+    let id: Int
+}

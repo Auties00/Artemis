@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+class WatchlistsResponse: Decodable {
+    let watchlists: [Watchlist]
+    let pagingInfo: Paging
+}

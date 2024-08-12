@@ -8,11 +8,21 @@
 import SwiftUI
 
 struct NotificationsSection: View {
+    @Environment(ScheduleController.self)
+    private var scheduleController: ScheduleController
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List {
+            Toggle("Schedule (Beta)", isOn: Binding(
+                get: {
+                    scheduleController.notifications
+                },
+                set: {
+                    scheduleController.notifications = $0
+                }
+            ))
+        }
+        .navigationTitle("Notifications")
+        .navigationBarTitleDisplayMode(.inline)
     }
-}
-
-#Preview {
-    NotificationsSection()
 }

@@ -6,53 +6,105 @@
 //
 
 import SwiftUI
-import CachedAsyncImage
 
 struct NetworkImage: View {
-    private let url: String
+    private let url: URL?
+    private let cornerRadius: CGFloat
+    private let fill: Bool
+    @Environment(ConnectivityController.self)
+    private var connectivityController: ConnectivityController
     @State
     private var data: AsyncResult<Data>
-    init(url: String) {
-        self.url = url
-        self.data = .empty
+    init(url: String?, cornerRadius: CGFloat = 8, fill: Bool = false) {
+        self.url = if let url = url {
+            URL(string: url)
+        }else {
+            nil
+        }
+        self.cornerRadius = cornerRadius
+        self.fill = fill
+        self._data = State(initialValue: .empty)
+    }
+    
+    init(thumbnailEntry: ThumbnailEntry?, cornerRadius: CGFloat = 8, fill: Bool = false) {
+        self.url = switch(thumbnailEntry) {
+        case .none:
+            nil
+        case .url(let url):
+            URL(string: url)
+        case .data:
+            nil
+        }
+        self.cornerRadius = cornerRadius
+        self.fill = fill
+        let initialValue: AsyncResult<Data> = if case .data(let data) = thumbnailEntry {
+            .success(data)
+        } else {
+            .empty
+        }
+        self._data = State(initialValue: initialValue)
     }
     
     var body: some View {
-        VStack {
+        ZStack(alignment: .center) {
             switch(data) {
-            case .empty, .loading:
-                ProgressView()
             case .success(data: let data):
-                Image(uiImage: UIImage(data: data)!)
-                    .resizable()
-                    .scaledToFit()
-                    .cornerRadius(6)
-            case .failure(error: let error):
-                ErrorView(error: error)
+                let result = resizableView(image: Image(uiImage: UIImage(data: data)!))
+                if(cornerRadius > 0) {
+                    result.cornerRadius(cornerRadius)
+                }else {
+                    result
+                }
+            case .error:
+                error()
+            default:
+                if(!connectivityController.isConnected) {
+                    error()
+                }else {
+                    ProgressView()
+                }
             }
-        }.task {
+        }
+        .task {
+            await loadImage()
+        }
+    }
+    
+    private func loadImage() async {
+        if case .empty = data {
             do {
                 data = .loading
-                guard let url = URL(string: url) else {
-                    throw RequestError.invalidUrl
+                guard let result = try await ImageCache.shared.getImageData(url: url) else {
+                    throw RequestError.invalidResponseData()
                 }
                 
-                let request = URLRequest(url: url)
-                let (responseData, response) = try await URLSession.shared.data(for: request)
-                if let httpResponse = response as? HTTPURLResponse {
-                    if(httpResponse.statusCode != 200) {
-                        throw RequestError.invalidResponseData()
-                    }
-                }
-                data = .success(responseData)
+                data = .success(result)
             }catch let error {
-                data = .failure(error)
+                data = .error(error)
             }
         }
     }
     
     @ViewBuilder
-    private func buildImage() -> some View {
+    private func error() -> some View {
+        Rectangle()
+            .cornerRadius(cornerRadius)
+            .background(.thinMaterial)
+        Image(systemName: connectivityController.isConnected ? "exclamationmark.triangle.fill" : "wifi.exclamationmark.circle.fill")
+            .resizable()
+            .frame(width: 30, height: 30)
+    }
     
+    @ViewBuilder
+    private func resizableView(image: Image) -> some View {
+        if(fill) {
+            image
+                .resizable()
+                .scaledToFill()
+        }else {
+            image
+                .resizable()
+                .scaledToFit()
+        }
     }
 }

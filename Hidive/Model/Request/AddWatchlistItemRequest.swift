@@ -6,3 +6,12 @@
 //
 
 import Foundation
+
+struct AddWatchlistItemRequest: Encodable {
+    let content: [AddWatchlistItemContent]
+}
+
+struct AddWatchlistItemContent: Encodable {
+    let id: String
+    let contentType: String
+}

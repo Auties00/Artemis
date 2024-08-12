@@ -7,86 +7,130 @@
 
 import Foundation
 
-private let endpoint: String = "https://animeschedule.net/api/v3/timetables/all"
-private let clientToken: String = "5hLYWRKSKrR783eqIfF71rspSE7IPP"
-
 @Observable
-class ScheduleController: ObservableObject {
+class ScheduleController {
     private let apiController: ApiController
-    private let decoder: JSONDecoder
-    var data: AsyncResult<[ScheduleBucketEntry]>
+    var data: AsyncResult<[ScheduleEntry]> = .empty
     init(apiController: ApiController) {
         self.apiController = apiController
-        self.decoder = JSONDecoder()
-        self.data = .loading
     }
     
-    public func loadData() async {
+    var notifications: Bool {
+        get {
+            access(keyPath: \.notifications)
+            return UserDefaults.standard.bool(forKey: "simulcastsNotifications")
+        }
+        set {
+            withMutation(keyPath: \.notifications) {
+                UserDefaults.standard.setValue(newValue, forKey: "simulcastsNotifications")
+            }
+        }
+    }
+    
+    func loadData() async {
         do {
-            let calendar = Calendar.current
-            let date = Date(timeIntervalSinceNow: 0)
-            let year = calendar.component(.year, from: date)
-            let weekOfYear = calendar.component(.weekOfYear, from: date)
-            let timezone = TimeZone.current.identifier
-            guard let url = URL(string: "\(endpoint)?week=\(weekOfYear)&year=\(year)&tz=\(timezone)") else {
-                throw RequestError.invalidUrl
+            let isRefresh = data.value != nil
+            let startTime = Date.now.millisecondsSince1970
+            
+            if(isRefresh) {
+                self.data = .loading
             }
             
-            var request = URLRequest(url: url)
-            request.httpMethod = "GET"
-            request.allHTTPHeaderFields = [
-                "Authorization": "Bearer \(clientToken)"
-            ]
+            let encodedTimeZone = TimeZone.current.identifier.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+            let result: ScheduleResponse = try await self.apiController.sendRequest(
+                method: "GET",
+                path: "v1/view/schedule?timezone=\(encodedTimeZone)&groupsPerPage=7&itemsPerGroup=7",
+                log: true
+            )
             
-            guard let (responseBody, response) = try? await URLSession.shared.data(for: request) else {
-                throw RequestError.invalidConnection
-            }
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                if(httpResponse.statusCode != 200) {
-                    throw RequestError.invalidResponseData()
+            if(isRefresh) {
+                let sleepTime = 750 - (Date.now.millisecondsSince1970 - startTime)
+                if sleepTime > 0 {
+                    try? await Task.sleep(for: .milliseconds(sleepTime))
                 }
             }
             
-            guard let result = try? decoder.decode(ScheduleResponse.self, from: responseBody) else {
-                throw RequestError.invalidResponseData()
+            self.data = .success(getCards(data: result))
+        }catch let error {
+            data = .error(error)
+        }
+    }
+    
+    private func getCards(data: ScheduleResponse) -> [ScheduleEntry] {
+        for element in data.elements {
+            if case .groupList(let scheduleElement) = element {
+                return scheduleElement
+                    .attributes
+                    .groups
+                    .lazy
+                    .flatMap { $0.attributes.cards ?? [] }
+                    .compactMap { getScheduleEntry(entry: $0) }
             }
-            
-            let scheduleEntries = result.entries
-                .filter { $0.airType != "raw" && $0.streams["hidive"] != nil}
-            
-            try await withThrowingTaskGroup(of: ScheduleBucketEntry.self) { group in
-                for scheduleEntry in scheduleEntries {
-                    group.addTask {
-                        do {
-                            let stream = URL(string: "https://\(scheduleEntry.streams["hidive"]!)")!
-                            var request = URLRequest(url: stream)
-                            request.httpMethod = "GET"
-                            let (_, response) = try await URLSession.shared.data(for: request)
-                            let urlParts = response.url!.absoluteString.split(separator: "/")
-                            let season: Season = try await self.apiController.sendRequest(
-                                method: "GET",
-                                path: "v4/\(urlParts[urlParts.count - 2])/\(urlParts[urlParts.count - 1])?rpp=20",
-                                log: true
-                            )
-                            return ScheduleBucketEntry(scheduleEntry: scheduleEntry, season: season)
-                        }catch let error {
-                            throw error
+        }
+        
+        return []
+    }
+    
+    // Parsing this data is kind of hard
+    private func getScheduleEntry(entry: ScheduleElementGroupCard) -> ScheduleEntry? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yy-MM-dd'T'HH:mm"
+        
+        var date: String?
+        var seriesTitle: String?
+        var episodeTitle: String?
+        var episodeType: String?
+        
+        for element in entry.attributes.content {
+            if case .gridBlock(let scheduleElementGroupCardContent) = element {
+                for child in scheduleElementGroupCardContent.attributes.elements {
+                    switch(child) {
+                    case .textBlock(let textBlock):
+                        let text = textBlock.attributes.text
+                        if textBlock.attributes.format == "date-time" {
+                            date = dateFormatter.date(from: text)?.toRelativeString(includeHour: true) ?? text
+                            if(seriesTitle != nil && episodeTitle != nil && episodeType != nil) {
+                                break
+                            }
+                        }else if(textBlock.attributes.format == nil) {
+                            let titleParts = text.split(separator: " - ", maxSplits: 2)
+                            episodeTitle = String(titleParts[0])
+                            seriesTitle = titleParts.count != 2 ? "" : String(titleParts[1])
+                            if(date != nil && episodeType != nil) {
+                                break
+                            }
                         }
+                    case .tagList(let tagList):
+                        for tag in tagList.attributes.tags {
+                            if case .tag(let tagElement) = tag {
+                                episodeType = tagElement.attributes.text.attributes.text
+                                if(seriesTitle != nil && episodeTitle != nil && date != nil) {
+                                    break
+                                }
+                            }
+                        }
+                    default:
+                        break
                     }
                 }
-                
-                var scheduleBucketEntries = [ScheduleBucketEntry]()
-                
-                for try await scheduleBucketEntry in group {
-                    scheduleBucketEntries.append(scheduleBucketEntry)
-                }
-                
-                data = .success(scheduleBucketEntries.sorted { $1.scheduleEntry.episodeDate > $0.scheduleEntry.episodeDate })
             }
-            
-        }catch let error {
-            data = .failure(error)
         }
+        
+        guard let date = date, let seriesTitle = seriesTitle, let episodeTitle = episodeTitle, let episodeType = episodeType else {
+            return nil
+        }
+        
+        guard let thumbnail = entry.attributes.header.first?.attributes.source else {
+            return nil
+        }
+        
+        return ScheduleEntry(
+            id: entry.attributes.action.data.id,
+            thumbnail: thumbnail,
+            date: date,
+            seriesTitle: seriesTitle,
+            episodeTitle: episodeTitle,
+            episodeType: episodeType
+        )
     }
 }
