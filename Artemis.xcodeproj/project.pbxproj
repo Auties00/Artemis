@@ -36,7 +36,6 @@
 		F87EDCC02C5F7E1F000D7E85 /* NotificationsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87EDCBF2C5F7E1F000D7E85 /* NotificationsSection.swift */; };
 		F87EDCE62C5A5D9E00881C45 /* DownloadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87EDCE52C5A5D9E00881C45 /* DownloadResponse.swift */; };
 		F87EDCE82C5A7A3E00881C45 /* EpisodeFairplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87EDCE72C5A7A3E00881C45 /* EpisodeFairplay.swift */; };
-		F8812D5F2C610CA5003FCC15 /* CategoriesError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8812D5E2C610CA5003FCC15 /* CategoriesError.swift */; };
 		F881358B2C68C6B800F9D736 /* ScheduleResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F881358A2C68C6B800F9D736 /* ScheduleResponse.swift */; };
 		F8818F172C4172590008BAF3 /* DashboardResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8818F162C4172590008BAF3 /* DashboardResponse.swift */; };
 		F8818F1F2C4188300008BAF3 /* AsyncResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8818F1E2C4188300008BAF3 /* AsyncResult.swift */; };
@@ -724,7 +723,6 @@
 				F88A1EBB2C46BB7D00DD48C3 /* RefreshTokenResponse.swift in Sources */,
 				F883242A2C4AC22A00708702 /* DRMResponse.swift in Sources */,
 				F83F379C2C62914A00083B04 /* ConnectivityController.swift in Sources */,
-				F8812D5F2C610CA5003FCC15 /* CategoriesError.swift in Sources */,
 				F88531A72C667A9300CD6995 /* BillingDetailsRequest.swift in Sources */,
 				F8E8F6452C557FF000E5DFF9 /* LibraryController.swift in Sources */,
 				F8871FF82C3C2937001597B0 /* ArtemisContentView.swift in Sources */,
@@ -895,7 +893,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 25U5GYGLQC;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -941,7 +939,7 @@
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 25U5GYGLQC;
 				ENABLE_HARDENED_RUNTIME = YES;
