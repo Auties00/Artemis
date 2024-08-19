@@ -1,6 +1,6 @@
 //
 //  NavigationView.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 08/07/24.
 //
@@ -42,10 +42,15 @@ struct TabNavigationView<Content>: View where Content : View{
         var routerController = routerController
         
         NavigationStack(path: $routerController.path) {
-            content()
+            let result = content()
                 .navigationTitle(title)
-                .navigationBarLargeTitleItems(trailing: ProfileButtonView(action: handleSheet))
                 .navigationDestination(for: NestedPageType.self, destination: handleDestination)
+            if(UIDevice.current.userInterfaceIdiom == .pad) {
+                result
+            }else {
+                result
+                    .navigationBarLargeTitleItems(trailing: ProfileButtonView(action: handleSheet))
+            }
         }
         .sheet(isPresented: $isLoginSheetOpened, content: {
             LoginSheet() {

@@ -1,6 +1,6 @@
 //
 //  iPhoneDimensions.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 11/07/24.
 //

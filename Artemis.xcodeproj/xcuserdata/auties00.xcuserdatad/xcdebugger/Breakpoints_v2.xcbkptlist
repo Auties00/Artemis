@@ -567,8 +567,8 @@
             filePath = "Artemis/View/Player/EpisodePlayer.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "173"
-            endingLineNumber = "173"
+            startingLineNumber = "174"
+            endingLineNumber = "174"
             landmarkName = "dismiss(animated:completion:)"
             landmarkType = "7">
             <Locations>

@@ -1,6 +1,6 @@
 //
 //  LoginSheet.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 11/07/24.
 //
@@ -46,7 +46,7 @@ struct LoginSheet: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text("HIDIVE")
+                Text("Artemis")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .lineSpacing(8)
@@ -55,7 +55,7 @@ struct LoginSheet: View {
                     .accessibilityHeading(.h1)
                     .padding(.horizontal, 15 + horizontalPaddingAddend)
                 
-                Text("Sign in with an email or create a new account to start watching our anime catalog and exclusive simulcasts")
+                Text("Sign in with an email, or create a new account, to start watching HIDIVE's anime catalog and exclusive simulcasts using Artemis")
                     .font(.body)
                     .lineSpacing(4)
                     .multilineTextAlignment(.center)

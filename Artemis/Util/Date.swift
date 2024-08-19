@@ -1,6 +1,6 @@
 //
 //  Date.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 10/08/24.
 //
@@ -29,6 +29,8 @@ extension Date {
             "dd/MM/yy\(includeHour ? ", HH:mm" : "")"
         } else if(nowMonth != episodeMonth || (self < now && nowWeek != episodeWeek) || (self > now && (episodeDay - nowDay) >= 7)) {
             "dd/MM\(includeHour ? ", HH:mm" : "")"
+        } else if(nowDay == episodeDay){
+            "'Today'\(includeHour ? ", HH:mm" : "")"
         } else {
             "EEEE\(includeHour ? ", HH:mm" : "")"
         }

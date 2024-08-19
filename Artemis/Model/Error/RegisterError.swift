@@ -1,6 +1,6 @@
 //
 //  RegisterError.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 03/08/24.
 //

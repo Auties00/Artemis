@@ -1,6 +1,6 @@
 //
 //  SearchEntryView.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 21/07/24.
 //

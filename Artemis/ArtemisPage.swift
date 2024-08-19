@@ -1,17 +1,21 @@
 //
-//  HidivePageType.swift
-//  Hidive
+//   ArtemisPageType.swift
+//   Artemis
 //
 //  Created by Alessandro Autiero on 22/07/24.
 //
 
 import Foundation
 
-enum RootPageType: CaseIterable {
+enum RootPageType: Identifiable, CaseIterable {
     case home
     case schedule
     case library
     case search
+    
+    var id: Self {
+        self
+    }
 }
 
 enum NestedPageType: Hashable {

@@ -1,6 +1,6 @@
 //
 //  NetworkImage.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 17/07/24.
 //

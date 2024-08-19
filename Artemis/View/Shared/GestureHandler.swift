@@ -1,6 +1,6 @@
 //
 //  GestureHandler.swift
-//  Hidive
+//   Artemis
 //
 //  StackOverflow: https://stackoverflow.com/a/76154592
 //

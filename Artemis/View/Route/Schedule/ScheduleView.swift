@@ -1,6 +1,6 @@
 //
 //  HomeView.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 08/07/24.
 //
@@ -32,7 +32,14 @@ struct ScheduleView: View {
                     List {
                         switch(scheduleController.data) {
                         case .success(data: let data):
-                            loadedBody(data: data, geometry: geometry)
+                            loadedBody(data: data, geometry: geometry)                    .onAppear {
+                                routerController.pathHandler = {
+                                    withAnimation {
+                                        scrollProxy.scrollTo(ScheduleView.headerId, anchor: .center)
+                                    }
+                                    return true
+                                }
+                            }
                         case .empty, .loading:
                             ExpandedView(geometry: geometry) {
                                 LoadingView()
@@ -43,14 +50,7 @@ struct ScheduleView: View {
                             }
                         }
                     }
-                    .onAppear {
-                        routerController.pathHandler = {
-                            withAnimation {
-                                scrollProxy.scrollTo(ScheduleView.headerId, anchor: .center)
-                            }
-                            return true
-                        }
-                    }
+                    .animation(nil, value: UUID())
                 }
             }
             .refreshable {

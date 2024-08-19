@@ -1,11 +1,12 @@
 //
 //  WatchlistsView.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 27/07/24.
 //
 
 import SwiftUI
+import AlertToast
 
 struct WatchlistsView: View {
     private static let headerId: String = "watchlistsHeader"
@@ -36,6 +37,18 @@ struct WatchlistsView: View {
     
     @State
     private var shouldScrollToHeader: Bool = false
+    
+    @State
+    private var infoTitle: String?
+    
+    @State
+    private var infoDescription: String?
+    
+    @State
+    private var loading: Bool = false
+    
+    @State
+    private var error: Bool = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -93,6 +106,12 @@ struct WatchlistsView: View {
             }
             
             await libraryController.loadWatchlists()
+        }
+        .toast(isPresenting: $loading) {
+            return AlertToast(type: .loading, title: infoTitle ?? "Loading...")
+        }
+        .toast(isPresenting: $error) {
+            return AlertToast(type: .error(Color.red), title: infoTitle ?? "Error", subTitle: infoDescription ?? "Unknown reason")
         }
     }
     
@@ -205,13 +224,23 @@ struct WatchlistsView: View {
     private func newWatchlistDialog() -> some View {
         TextField("Name", text: $watchlistName)
         Button("Create") {
+            if(loading) {
+                return
+            }
+            
+            self.infoTitle = "Creating watchlist..."
+            self.loading = true
             Task {
                 do {
                     let name = watchlistName
                     watchlistName = ""
                     try await libraryController.createWatchlist(name: name)
+                    self.loading = false
                 }catch let error {
-                    print("Error: \(error)")
+                    self.loading = false
+                    self.infoTitle = "Cannot create watchlist"
+                    self.infoDescription = error.localizedDescription
+                    self.error = true
                 }
             }
         }
@@ -229,12 +258,22 @@ struct WatchlistsView: View {
             }
             
             Task {
+                if(loading) {
+                    return
+                }
+                
+                self.infoTitle = "Renaming watchlist..."
+                self.loading = true
                 do {
                     let name = watchlistName
                     watchlistName = ""
                     try await libraryController.renameWatchlist(watchlist: watchlist, name: name)
+                    self.loading = false
                 }catch let error {
-                    print("Error: \(error)")
+                    self.loading = false
+                    self.infoTitle = "Cannot rename watchlist"
+                    self.infoDescription = error.localizedDescription
+                    self.error = true
                 }
             }
         }
@@ -246,10 +285,16 @@ struct WatchlistsView: View {
     private func onDelete(toRemove: [Watchlist]) {
         Task {
             for watchlist in toRemove {
+                self.infoTitle = "Deleting watchlist..."
+                self.loading = true
                 do {
                     try await libraryController.deleteWatchlist(watchlist: watchlist)
+                    self.loading = false
                 }catch let error {
-                    print("Error: \(error)")
+                    self.loading = false
+                    self.infoTitle = "Cannot delete watchlist"
+                    self.infoDescription = error.localizedDescription
+                    self.error = true
                 }
             }
         }

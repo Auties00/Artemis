@@ -1,6 +1,6 @@
 //
 //  DashboardResponse.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 12/07/24.
 //
@@ -28,11 +28,11 @@ class Hero : Decodable, Identifiable, Equatable {
     let heroId: Int
     let title: String?
     let description: String?
-    let titleImage: String?
+    let titleImage: ThumbnailEntry
     let enabled: Bool?
     let ctaText: String?
     let link: HeroLink
-    let imageUrl: String?
+    let imageUrl: ThumbnailEntry
     var lastWatchedEpisode: Episode?
     
     var id: Int {
@@ -59,11 +59,11 @@ class Hero : Decodable, Identifiable, Equatable {
         self.heroId = try container.decode(Int.self, forKey: .heroId)
         self.title = try container.decodeIfPresent(String.self, forKey: .title)
         self.description = try container.decodeIfPresent(String.self, forKey: .description)
-        self.titleImage = try container.decodeIfPresent(String.self, forKey: .titleImage)
+        self.titleImage = try container.decode(ThumbnailEntry.self, forKey: .titleImage)
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: .enabled)
         self.ctaText = try container.decodeIfPresent(String.self, forKey: .ctaText)
         self.link = try container.decode(HeroLink.self, forKey: .link)
-        self.imageUrl = try container.decodeIfPresent(String.self, forKey: .imageUrl)
+        self.imageUrl = try container.decode(ThumbnailEntry.self, forKey: .imageUrl)
     }
 }
 

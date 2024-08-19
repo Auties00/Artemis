@@ -1,6 +1,6 @@
 //
 //  LoginSheet.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 17/07/24.
 //
@@ -109,6 +109,21 @@ struct AccountSheet: View {
                         label: {
                             HStack {
                                 Text("Help")
+                                Spacer()
+                                NavigationLink.empty
+                            }
+                        }
+                    )
+                    .accentColor(colorScheme == .dark ? .white : .black)
+                    
+                    
+                    Button(
+                        action: {
+                            openURL(URL(string: "https://support.hidive.com/en/support/solutions/articles/11000125495-how-do-i-cancel-my-membership-")!)
+                        },
+                        label: {
+                            HStack {
+                                Text("Delete account")
                                 Spacer()
                                 NavigationLink.empty
                             }

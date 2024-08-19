@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F803777A2C73757A00C00C0A /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = F80377792C73757A00C00C0A /* SwiftUIIntrospect */; };
 		F809875B2C4DA5B500B84B79 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F809875A2C4DA5B500B84B79 /* SearchView.swift */; };
 		F809875E2C4DAC7700B84B79 /* SearchResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F809875D2C4DAC7700B84B79 /* SearchResponse.swift */; };
 		F80987602C4DB18D00B84B79 /* AnimeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F809875F2C4DB18D00B84B79 /* AnimeController.swift */; };
@@ -44,7 +45,7 @@
 		F88240862C491A9900F1EF94 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88240852C491A9900F1EF94 /* ProfileView.swift */; };
 		F882408A2C4926D900F1EF94 /* ScheduleController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88240892C4926D900F1EF94 /* ScheduleController.swift */; };
 		F882408E2C4948F200F1EF94 /* ScheduleCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F882408D2C4948F200F1EF94 /* ScheduleCardView.swift */; };
-		F882B7952C53EE2C00FB77DA /* HidiveOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = F882B7942C53EE2C00FB77DA /* HidiveOnboarding.swift */; };
+		F882B7952C53EE2C00FB77DA /* ArtemisOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = F882B7942C53EE2C00FB77DA /* ArtemisOnboarding.swift */; };
 		F882B7972C53F85500FB77DA /* GestureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F882B7962C53F85500FB77DA /* GestureHandler.swift */; };
 		F882CCE72C655EB2004E8946 /* AccountInformationSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F882CCE62C655EB2004E8946 /* AccountInformationSection.swift */; };
 		F882FC022C63CA64009FACD2 /* Savable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F882FC012C63CA64009FACD2 /* Savable.swift */; };
@@ -57,8 +58,8 @@
 		F88531A32C664DD500CD6995 /* CountriesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88531A22C664DD500CD6995 /* CountriesResponse.swift */; };
 		F88531A72C667A9300CD6995 /* BillingDetailsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88531A62C667A9300CD6995 /* BillingDetailsRequest.swift */; };
 		F88531A92C667C4F00CD6995 /* TextFieldSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88531A82C667C4F00CD6995 /* TextFieldSection.swift */; };
-		F8871FF62C3C2937001597B0 /* HidiveApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8871FF52C3C2937001597B0 /* HidiveApp.swift */; };
-		F8871FF82C3C2937001597B0 /* HidiveContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8871FF72C3C2937001597B0 /* HidiveContentView.swift */; };
+		F8871FF62C3C2937001597B0 /* ArtemisApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8871FF52C3C2937001597B0 /* ArtemisApp.swift */; };
+		F8871FF82C3C2937001597B0 /* ArtemisContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8871FF72C3C2937001597B0 /* ArtemisContentView.swift */; };
 		F8871FFA2C3C2938001597B0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8871FF92C3C2938001597B0 /* Assets.xcassets */; };
 		F887200F2C3C2B6C001597B0 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F887200E2C3C2B6C001597B0 /* HomeView.swift */; };
 		F88720132C3C2C65001597B0 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88720122C3C2C65001597B0 /* LibraryView.swift */; };
@@ -73,7 +74,7 @@
 		F88812CA2C4EA1890084589B /* Series.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88812C92C4EA1890084589B /* Series.swift */; };
 		F88812CC2C4EA1900084589B /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88812CB2C4EA1900084589B /* Season.swift */; };
 		F88812D02C4EA1AD0084589B /* Episode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88812CF2C4EA1AD0084589B /* Episode.swift */; };
-		F88812D22C4EA2560084589B /* HidivePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88812D12C4EA2560084589B /* HidivePage.swift */; };
+		F88812D22C4EA2560084589B /* ArtemisPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88812D12C4EA2560084589B /* ArtemisPage.swift */; };
 		F88812D42C4EB05F0084589B /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88812D32C4EB05F0084589B /* Playlist.swift */; };
 		F88812D62C4EC94B0084589B /* Schedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88812D52C4EC94B0084589B /* Schedule.swift */; };
 		F88A1EB02C469A1700DD48C3 /* RefreshTokenRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88A1EAF2C469A1700DD48C3 /* RefreshTokenRequest.swift */; };
@@ -157,7 +158,7 @@
 		F88240852C491A9900F1EF94 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F88240892C4926D900F1EF94 /* ScheduleController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleController.swift; sourceTree = "<group>"; };
 		F882408D2C4948F200F1EF94 /* ScheduleCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleCardView.swift; sourceTree = "<group>"; };
-		F882B7942C53EE2C00FB77DA /* HidiveOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HidiveOnboarding.swift; sourceTree = "<group>"; };
+		F882B7942C53EE2C00FB77DA /* ArtemisOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtemisOnboarding.swift; sourceTree = "<group>"; };
 		F882B7962C53F85500FB77DA /* GestureHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestureHandler.swift; sourceTree = "<group>"; };
 		F882CCE62C655EB2004E8946 /* AccountInformationSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInformationSection.swift; sourceTree = "<group>"; };
 		F882FC012C63CA64009FACD2 /* Savable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Savable.swift; sourceTree = "<group>"; };
@@ -172,8 +173,8 @@
 		F88531A62C667A9300CD6995 /* BillingDetailsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingDetailsRequest.swift; sourceTree = "<group>"; };
 		F88531A82C667C4F00CD6995 /* TextFieldSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldSection.swift; sourceTree = "<group>"; };
 		F8871FF22C3C2937001597B0 /* Artemis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Artemis.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F8871FF52C3C2937001597B0 /* HidiveApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HidiveApp.swift; sourceTree = "<group>"; };
-		F8871FF72C3C2937001597B0 /* HidiveContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HidiveContentView.swift; sourceTree = "<group>"; };
+		F8871FF52C3C2937001597B0 /* ArtemisApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtemisApp.swift; sourceTree = "<group>"; };
+		F8871FF72C3C2937001597B0 /* ArtemisContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtemisContentView.swift; sourceTree = "<group>"; };
 		F8871FF92C3C2938001597B0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Artemis/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		F887200E2C3C2B6C001597B0 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		F88720122C3C2C65001597B0 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
@@ -186,7 +187,7 @@
 		F88812C92C4EA1890084589B /* Series.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Series.swift; sourceTree = "<group>"; };
 		F88812CB2C4EA1900084589B /* Season.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Season.swift; sourceTree = "<group>"; };
 		F88812CF2C4EA1AD0084589B /* Episode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Episode.swift; sourceTree = "<group>"; };
-		F88812D12C4EA2560084589B /* HidivePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HidivePage.swift; sourceTree = "<group>"; };
+		F88812D12C4EA2560084589B /* ArtemisPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtemisPage.swift; sourceTree = "<group>"; };
 		F88812D32C4EB05F0084589B /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
 		F88812D52C4EC94B0084589B /* Schedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schedule.swift; sourceTree = "<group>"; };
 		F88A1EAF2C469A1700DD48C3 /* RefreshTokenRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshTokenRequest.swift; sourceTree = "<group>"; };
@@ -238,6 +239,7 @@
 				F88A1EB92C46B96600DD48C3 /* ACarousel in Frameworks */,
 				F887202A2C3C4E5F001597B0 /* WelcomeSheet in Frameworks */,
 				F887202C2C3C4F03001597B0 /* WelcomeSheet in Frameworks */,
+				F803777A2C73757A00C00C0A /* SwiftUIIntrospect in Frameworks */,
 				F88C1CEB2C62471F0045FA75 /* AlertToast in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -361,10 +363,10 @@
 				F887201D2C3C47ED001597B0 /* Model */,
 				F887201A2C3C4065001597B0 /* Controller */,
 				F88720192C3C4053001597B0 /* View */,
-				F8871FF52C3C2937001597B0 /* HidiveApp.swift */,
-				F8871FF72C3C2937001597B0 /* HidiveContentView.swift */,
-				F882B7942C53EE2C00FB77DA /* HidiveOnboarding.swift */,
-				F88812D12C4EA2560084589B /* HidivePage.swift */,
+				F8871FF52C3C2937001597B0 /* ArtemisApp.swift */,
+				F8871FF72C3C2937001597B0 /* ArtemisContentView.swift */,
+				F882B7942C53EE2C00FB77DA /* ArtemisOnboarding.swift */,
+				F88812D12C4EA2560084589B /* ArtemisPage.swift */,
 				F8871FF92C3C2938001597B0 /* Assets.xcassets */,
 			);
 			path = Artemis;
@@ -596,6 +598,7 @@
 				F887202B2C3C4F03001597B0 /* WelcomeSheet */,
 				F88A1EB82C46B96600DD48C3 /* ACarousel */,
 				F88C1CEA2C62471F0045FA75 /* AlertToast */,
+				F80377792C73757A00C00C0A /* SwiftUIIntrospect */,
 			);
 			productName = Hidive;
 			productReference = F8871FF22C3C2937001597B0 /* Artemis.app */;
@@ -630,6 +633,7 @@
 				F88A1EB72C46B96600DD48C3 /* XCRemoteSwiftPackageReference "ACarousel" */,
 				F8F0BE2B2C5AC98600FFE9B2 /* XCRemoteSwiftPackageReference "M3UKit" */,
 				F88C1CE92C62471F0045FA75 /* XCRemoteSwiftPackageReference "AlertToast" */,
+				F80377782C73757A00C00C0A /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 			);
 			productRefGroup = F8871FF32C3C2937001597B0 /* Products */;
 			projectDirPath = "";
@@ -659,7 +663,7 @@
 				F809875E2C4DAC7700B84B79 /* SearchResponse.swift in Sources */,
 				F88812D02C4EA1AD0084589B /* Episode.swift in Sources */,
 				F887200F2C3C2B6C001597B0 /* HomeView.swift in Sources */,
-				F882B7952C53EE2C00FB77DA /* HidiveOnboarding.swift in Sources */,
+				F882B7952C53EE2C00FB77DA /* ArtemisOnboarding.swift in Sources */,
 				F881358B2C68C6B800F9D736 /* ScheduleResponse.swift in Sources */,
 				F87B70A82C4BE6C600037399 /* WatchHistoryView.swift in Sources */,
 				F89720B62C5ED203001DB75B /* ProfileSection.swift in Sources */,
@@ -723,9 +727,9 @@
 				F8812D5F2C610CA5003FCC15 /* CategoriesError.swift in Sources */,
 				F88531A72C667A9300CD6995 /* BillingDetailsRequest.swift in Sources */,
 				F8E8F6452C557FF000E5DFF9 /* LibraryController.swift in Sources */,
-				F8871FF82C3C2937001597B0 /* HidiveContentView.swift in Sources */,
+				F8871FF82C3C2937001597B0 /* ArtemisContentView.swift in Sources */,
 				F8E8F6492C5584E900E5DFF9 /* WatchlistsView.swift in Sources */,
-				F88812D22C4EA2560084589B /* HidivePage.swift in Sources */,
+				F88812D22C4EA2560084589B /* ArtemisPage.swift in Sources */,
 				F8BD599D2C4D6E0A001DC745 /* ErrorView.swift in Sources */,
 				F882408E2C4948F200F1EF94 /* ScheduleCardView.swift in Sources */,
 				F8A646BA2C3D7B5E00053ECD /* ApiController.swift in Sources */,
@@ -754,7 +758,7 @@
 				F883659C2C64DFCD0042355F /* Download.swift in Sources */,
 				F89720AC2C5EB3F1001DB75B /* RegisterRequest.swift in Sources */,
 				F87EDCE62C5A5D9E00881C45 /* DownloadResponse.swift in Sources */,
-				F8871FF62C3C2937001597B0 /* HidiveApp.swift in Sources */,
+				F8871FF62C3C2937001597B0 /* ArtemisApp.swift in Sources */,
 				F893E8F42C49A9B40026A31A /* PlaybackResponse.swift in Sources */,
 				F8B9583A2C48320A00DDB479 /* AccountSheet.swift in Sources */,
 				F8B7F9A42C52E7D2001C3579 /* Paging.swift in Sources */,
@@ -891,7 +895,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 25U5GYGLQC;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -923,7 +927,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TVOS_DEPLOYMENT_TARGET = 17.0;
 			};
 			name = Debug;
@@ -937,7 +941,7 @@
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 25U5GYGLQC;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -969,7 +973,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TVOS_DEPLOYMENT_TARGET = 17.0;
 			};
 			name = Release;
@@ -998,6 +1002,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F80377782C73757A00C00C0A /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/swiftui-introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
 		F88720282C3C4E5F001597B0 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MAJKFL/Welcome-Sheet";
@@ -1033,6 +1045,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F80377792C73757A00C00C0A /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F80377782C73757A00C00C0A /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = SwiftUIIntrospect;
+		};
 		F88720292C3C4E5F001597B0 /* WelcomeSheet */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F88720282C3C4E5F001597B0 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */;

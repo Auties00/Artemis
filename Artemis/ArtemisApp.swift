@@ -1,6 +1,6 @@
 //
-//  HidiveApp.swift
-//  Hidive
+//   ArtemisApp.swift
+//   Artemis
 //
 //  Created by Alessandro Autiero on 08/07/24.
 //
@@ -9,7 +9,7 @@ import SwiftUI
 import AVKit
 
 @main
-struct HidiveApp: App {
+struct ArtemisApp: App {
     private let connectivityController: ConnectivityController
     private let apiController: ApiController
     private let accountController: AccountController
@@ -17,7 +17,7 @@ struct HidiveApp: App {
     private let searchController: SearchController
     private let animeController: AnimeController
     private let libraryController: LibraryController
-    @UIApplicationDelegateAdaptor(HidiveAppDelegate.self)
+    @UIApplicationDelegateAdaptor(ArtemisAppDelegate.self)
     private var appDelegate
     
     init() {
@@ -35,7 +35,7 @@ struct HidiveApp: App {
     
     var body: some Scene {
         WindowGroup {
-            HidiveContentView()
+            ArtemisContentView()
         }
         .environment(connectivityController)
         .environment(apiController)
@@ -47,10 +47,10 @@ struct HidiveApp: App {
     }
 }
 
-class HidiveAppDelegate: NSObject, UIApplicationDelegate {
+class ArtemisAppDelegate: NSObject, UIApplicationDelegate {
     static var orientationLock = UIInterfaceOrientationMask.all
     
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-        return HidiveAppDelegate.orientationLock
+        return ArtemisAppDelegate.orientationLock
     }
 }

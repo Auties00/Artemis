@@ -1,6 +1,6 @@
 //
 //  EpisodePlayerView.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 18/07/24.
 //
@@ -10,7 +10,7 @@ import AVKit
 import UIKit
 
 class EpisodePlayer: AVPlayerViewController {
-    private var playerId: String
+    private var playerId: String?
     private var episodable: (any Episodable)!
     private var episode: Episode
     private var nextEpisodes: [Episode]
@@ -33,19 +33,11 @@ class EpisodePlayer: AVPlayerViewController {
     // Kind of annoying because we have to pass the environment variables into the constructor instead of using annotation magic
     // Apart from that all is good
     static func open(episodable: Episodable?, episode: Episode, nextEpisodes: [Episode]? = nil, accountController: AccountController, animeController: AnimeController, onDismiss: ((Episode) -> Void)? = nil) {
-        let scene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-
-        let rootViewController = scene?
-            .windows.first(where: { $0.isKeyWindow })?
-            .rootViewController
-        
         let player = EpisodePlayer(episodable: episodable, episode: episode, nextEpisodes: nextEpisodes, accountController: accountController, animeController: animeController, onDismiss: onDismiss)
-        rootViewController?.present(player, animated: true)
+        UIApplication.rootViewController?.present(player, animated: true)
     }
     
     private init(episodable: Episodable?, episode: Episode, nextEpisodes: [Episode]? = nil, accountController: AccountController, animeController: AnimeController, onDismiss: ((Episode) -> Void)?) {
-        self.playerId = UUID().uuidString
         self.episodable = episodable
         self.episode = episode
         self.accountController = accountController
@@ -66,12 +58,13 @@ class EpisodePlayer: AVPlayerViewController {
     }
     
     override func viewDidLoad() {
-        Task {
-            await self.preparePlayer()
+        Task { [weak self] in
+            await self?.preparePlayer()
         }
     }
     
     private func preparePlayer() async {
+        self.playerId = UUID().uuidString
         guard let playerItem = await createPlayerItem() else {
             return
         }
@@ -128,7 +121,11 @@ class EpisodePlayer: AVPlayerViewController {
     }
     
     private nonisolated func handleStatus(item: AVPlayerItem) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
             switch(item.status) {
             case .readyToPlay:
                 await self.addNextButton()
@@ -144,7 +141,11 @@ class EpisodePlayer: AVPlayerViewController {
     }
     
     private nonisolated func handleLanguage(item: AVPlayerItem) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
             var audioLocale: String?
             if let audioGroup = try? await item.asset.loadMediaSelectionGroup(for: AVMediaCharacteristic.audible) {
                 let selectedOption = item.currentMediaSelection.selectedMediaOption(in: audioGroup)
@@ -355,9 +356,10 @@ class EpisodePlayer: AVPlayerViewController {
         }
         
         player?.pause()
+        self.saveProgress(last: true)
         self.episode = nextEpisodes.removeFirst()
-        Task {
-            await self.preparePlayer()
+        Task { [weak self] in
+            await self?.preparePlayer()
         }
     }
     
@@ -383,7 +385,15 @@ class EpisodePlayer: AVPlayerViewController {
     }
     
     private nonisolated func saveProgress(last: Bool) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
+            guard let playerId = await self.playerId else {
+                return
+            }
+            
             guard let playerItem = await self.player?.currentItem else {
                 return
             }
@@ -415,13 +425,17 @@ class EpisodePlayer: AVPlayerViewController {
 
 private class PictureInPictureHandler: NSObject, AVPlayerViewControllerDelegate {
     func playerViewController(_ playerViewController: AVPlayerViewController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
+        UIApplication.rootViewController?.present(playerViewController, animated: true)
+    }
+}
+
+private extension UIApplication {
+    static var rootViewController: UIViewController? {
         let scene = UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
 
-        let rootViewController = scene?
+        return scene?
             .windows.first(where: { $0.isKeyWindow })?
             .rootViewController
-
-        rootViewController?.present(playerViewController, animated: false)
     }
 }

@@ -1,6 +1,6 @@
 //
 //  AdjacentEpisodesResponse.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 25/07/24.
 //

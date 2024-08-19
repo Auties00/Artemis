@@ -1,6 +1,6 @@
 //
-//  HidiveOnboarding.swift
-//  Hidive
+//   ArtemisOnboarding.swift
+//   Artemis
 //
 //  Created by Alessandro Autiero on 26/07/24.
 //
@@ -11,13 +11,13 @@ import WelcomeSheet
 
 private let pages = [
     WelcomeSheetPage(
-        title: "Welcome to\n HIDIVE",
+        title: "Welcome to\n Artemis",
         rows: [
             WelcomeSheetPageRow(
                 imageSystemName: "rectangle.stack",
                 accentColor: Color.blue,
                 title: "Dive in!",
-                content: "Watch anime from current to classics, plans starting at $5.99/MONTH"
+                content: "Artemis is an unofficial alternative client for HIDIVE subscribers"
             ),
             
             WelcomeSheetPageRow(

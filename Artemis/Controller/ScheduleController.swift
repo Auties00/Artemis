@@ -1,6 +1,6 @@
 //
 //  ScheduleController.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 18/07/24.
 //

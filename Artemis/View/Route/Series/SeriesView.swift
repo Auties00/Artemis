@@ -1,6 +1,6 @@
 //
 //  SeriesView.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 18/07/24.
 //
@@ -8,10 +8,10 @@
 import SwiftUI
 import AVFoundation
 
-private let defaultImageHeight: CGFloat = 573.3333333333334
-private let scrollableCoordinateSpace = "series"
-
 struct SeriesView: View {
+    private static let defaultImageHeight: CGFloat = 573.3333333333334
+    private static let scrollableCoordinateSpace = "series"
+    
     @Environment(AccountController.self)
     private var accountController: AccountController
     
@@ -55,7 +55,7 @@ struct SeriesView: View {
     private var scrollPosition: Int?
     
     @State
-    private var thumbnailHeight: CGFloat = defaultImageHeight
+    private var thumbnailHeight: CGFloat = SeriesView.defaultImageHeight
     
     @State
     private var thumbnailOpacity: Double = 1
@@ -134,33 +134,33 @@ struct SeriesView: View {
                     .offset(y: -lastOverscroll)
                     .background(
                         GeometryReader { proxy in
-                            let position = -proxy.frame(in: .named(scrollableCoordinateSpace)).origin.y
+                            let position = -proxy.frame(in: .named(SeriesView.scrollableCoordinateSpace)).origin.y
                             Color.clear.onChange(of: position) { _, position in
                                 onScroll(scrollOffset: position)
                             }
                         }
                     )
-                }
-                .onAppear {
-                    routerController.pathHandler = {
-                        if(!shouldScrollToHeader) {
-                            return false
+                    .onAppear {
+                        routerController.pathHandler = {
+                            if(!shouldScrollToHeader) {
+                                return false
+                            }
+                            
+                            guard case .success(let data) = holder else {
+                                return false
+                            }
+                            
+                            withAnimation {
+                                scrollProxy.scrollTo(data.episodable.id, anchor: .center)
+                            }
+                            return true
                         }
-                        
-                        guard case .success(let data) = holder else {
-                            return false
-                        }
-                        
-                        withAnimation {
-                            scrollProxy.scrollTo(data.episodable.id, anchor: .center)
-                        }
-                        return true
                     }
                 }
                 .overlay(alignment: .top) {
                     customNavigationBar(outerGeometry: outerGeometry)
                 }
-                .coordinateSpace(name: scrollableCoordinateSpace)
+                .coordinateSpace(name: SeriesView.scrollableCoordinateSpace)
                 .ignoresSafeArea(.all, edges: [.top])
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden(true)
@@ -207,6 +207,7 @@ struct SeriesView: View {
             }
         )
         .offset(x: -16)
+        .animation(.easeInOut, value: navigationBarTitle)
     }
     
     @ViewBuilder
@@ -224,6 +225,7 @@ struct SeriesView: View {
                     }
                 }
             )
+            .animation(.easeInOut, value: navigationBarTitle)
         }
     }
     
@@ -244,6 +246,7 @@ struct SeriesView: View {
                     self.shareText = SharableLink(link: url)
                 }
             )
+            .animation(.easeInOut, value: navigationBarTitle)
         }
     }
     
@@ -430,13 +433,9 @@ struct SeriesView: View {
             }
             
             if(navigationBarTitle.isEmpty && scrollOffset > collapseHeight) {
-                withAnimation {
-                    navigationBarTitle = name
-                }
+                navigationBarTitle = name
             }else if(!navigationBarTitle.isEmpty && scrollOffset < collapseHeight) {
-                withAnimation {
-                    navigationBarTitle = ""
-                }
+                navigationBarTitle = ""
             }
         }
     }

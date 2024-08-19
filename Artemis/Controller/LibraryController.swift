@@ -1,6 +1,6 @@
 //
 //  LibraryController.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 27/07/24.
 //
@@ -226,7 +226,6 @@ class LibraryController {
         )
         if var content = watchlist.content {
             if watchlist.thumbnails.isEmpty, let thumbnail = whatchlistEntry.coverUrl {
-                print("Was empty, setting thumbnail")
                 watchlist.thumbnails = [thumbnail]
             }
             

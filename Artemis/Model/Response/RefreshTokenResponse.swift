@@ -1,6 +1,6 @@
 //
 //  RefreshTokenResponse.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 16/07/24.
 //

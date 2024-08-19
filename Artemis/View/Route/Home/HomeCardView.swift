@@ -1,6 +1,6 @@
 //
 //  HeroCarouselView.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 04/08/24.
 //
@@ -8,6 +8,43 @@
 import SwiftUI
 import ACarousel
 import AlertToast
+
+struct HeroHeaderView: View {
+    private let heroes: [Hero]
+    init(heroes: [Hero]) {
+        self.heroes = heroes
+    }
+    
+    var body: some View {
+        TabView {
+            ForEach(heroes) { hero in
+                NetworkImage(
+                    thumbnailEntry: hero.imageUrl,
+                    width: .infinity,
+                    height: 800,
+                    cornerRadius: 0
+                )
+                .overlay(alignment: .bottom) {
+                    if case .url(let url) = hero.titleImage {
+                        AsyncImage(url: URL(string: url)!)  { image in
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 300)
+                                .padding(.bottom, 60)
+                        } placeholder: {
+                            
+                        }
+                    }
+                }
+            }
+        }
+        .tabViewStyle(.page)
+        .indexViewStyle(.page(backgroundDisplayMode: .always))
+        .frame(maxWidth: .infinity, minHeight: 800)
+        .padding(.bottom)
+    }
+}
 
 struct HeroCarouselView: View {
     private let heroes: [Hero]
@@ -167,13 +204,16 @@ struct BucketSectionView: View {
     @Environment(RouterController.self)
     private var routerController: RouterController
     
+    @Environment(\.colorScheme)
+    private var colorScheme: ColorScheme
+    
     private let bucket: Bucket
     init(bucket: Bucket) {
         self.bucket = bucket
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        let result = VStack(alignment: .leading, spacing: 0) {
             Text(toBucketTitle(input: bucket.name))
                 .font(.system(size: 20))
                 .fontWeight(.bold)
@@ -210,10 +250,6 @@ struct BucketSectionView: View {
                 .frame(maxWidth: .infinity)
             }
         }
-        .background(Color.backgroundColor)
-        .cornerRadius(8)
-        .padding(.horizontal)
-        .padding(.bottom)
         .alert(
             "Player error",
             isPresented: $error,
@@ -222,6 +258,15 @@ struct BucketSectionView: View {
                 Text("Cannot open player")
             }
         )
+        .background(Color.backgroundColor)
+        .cornerRadius(8)
+        .padding(.bottom)
+        
+        if(UIDevice.current.userInterfaceIdiom == .pad) {
+            result
+        }else {
+            result.padding(.horizontal)
+        }
     }
     
     

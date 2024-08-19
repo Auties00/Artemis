@@ -1,6 +1,6 @@
 //
 //  WatchlistView.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 28/07/24.
 //
@@ -262,7 +262,7 @@ struct WatchlistView: View {
                 Text(title)
                     .font(.system(size: 20))
                     .fontWeight(.bold)
-                    .lineLimit(4)
+                    .lineLimit(3)
                 
                 let description = switch(watchlistEntry) {
                 case .episode(let episode):
@@ -287,11 +287,7 @@ struct WatchlistView: View {
     
     private func onDelete(watchlist: Watchlist, watchlistEntry: DescriptableEntry) {
         Task {
-            do {
-                try await libraryController.removeWatchlistItem(watchlist: watchlist, watchlistEntry: watchlistEntry)
-            }catch let error {
-                print("Error: \(error)")
-            }
+            try await libraryController.removeWatchlistItem(watchlist: watchlist, watchlistEntry: watchlistEntry)
         }
     }
 }

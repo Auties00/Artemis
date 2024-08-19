@@ -1,6 +1,6 @@
 //
 //  AddToWatchlistSheet.swift
-//  Hidive
+//   Artemis
 //
 //  Created by Alessandro Autiero on 01/08/24.
 //
