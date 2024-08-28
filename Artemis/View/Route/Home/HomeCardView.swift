@@ -132,7 +132,7 @@ struct HeroCardView: View {
         .padding()
         .background(.background.secondary)
         .onTapGesture {
-            routerController.path.append(NestedPageType.home(hero.link.event, lastWatchedEpisode: hero.lastWatchedEpisode))
+            routerController.path.append(NestedPageType.series(hero.link.event, lastWatchedEpisode: hero.lastWatchedEpisode))
         }
         .contextMenu {
             Button {
@@ -142,7 +142,7 @@ struct HeroCardView: View {
             }
             
             Button {
-                routerController.path.append(NestedPageType.home(hero.link.event, lastWatchedEpisode: hero.lastWatchedEpisode))
+                routerController.path.append(NestedPageType.series(hero.link.event, lastWatchedEpisode: hero.lastWatchedEpisode))
             } label: {
                 Label("Go to Anime", systemImage: "info.circle")
             }
@@ -169,6 +169,7 @@ struct HeroCardView: View {
             EpisodePlayer.open(
                 episodable: nil,
                 episode: lastWatchedEpisode,
+                routerController: routerController,
                 accountController: accountController,
                 animeController: animeController
             ) {
@@ -180,6 +181,7 @@ struct HeroCardView: View {
         Task {
             do {
                 try await watchNow(
+                    routerController: routerController,
                     accountController: accountController,
                     animeController: animeController,
                     bucketEntry: hero.link.event
@@ -230,6 +232,7 @@ struct BucketSectionView: View {
                                     EpisodePlayer.open(
                                         episodable: nil,
                                         episode: episode,
+                                        routerController: routerController,
                                         accountController: accountController,
                                         animeController: animeController
                                     )
@@ -240,7 +243,7 @@ struct BucketSectionView: View {
                             )
                             .buttonStyle(.plain)
                         }else {
-                            NavigationLink(value: NestedPageType.home(contentEntry)) {
+                            NavigationLink(value: NestedPageType.series(contentEntry)) {
                                 label
                             }
                             .buttonStyle(.plain)
@@ -349,6 +352,7 @@ struct BucketSectionView: View {
         Task {
             do {
                 try await watchNow(
+                    routerController: routerController,
                     accountController: accountController,
                     animeController: animeController,
                     bucketEntry: contentEntry
@@ -365,20 +369,21 @@ struct BucketSectionView: View {
                 return
             }
             
-            routerController.path.append(NestedPageType.home(.season(season)))
+            routerController.path.append(NestedPageType.series(.season(season), lastWatchedEpisode: episode))
         } else {
-            routerController.path.append(NestedPageType.home(contentEntry))
+            routerController.path.append(NestedPageType.series(contentEntry))
         }
     }
 }
 
 private extension View {
-    func watchNow(accountController: AccountController, animeController: AnimeController, bucketEntry: DescriptableEntry) async throws {
+    func watchNow(routerController: RouterController, accountController: AccountController, animeController: AnimeController, bucketEntry: DescriptableEntry) async throws {
         switch(bucketEntry) {
         case .episode(let episode):
             await EpisodePlayer.open(
                 episodable: nil,
                 episode: episode,
+                routerController: routerController,
                 accountController: accountController,
                 animeController: animeController
             )
@@ -396,6 +401,7 @@ private extension View {
             await EpisodePlayer.open(
                 episodable: season,
                 episode: episode,
+                routerController: routerController,
                 accountController: accountController,
                 animeController: animeController
             )
@@ -408,6 +414,7 @@ private extension View {
             await EpisodePlayer.open(
                 episodable: season,
                 episode: episode,
+                routerController: routerController,
                 accountController: accountController,
                 animeController: animeController
             )
@@ -420,6 +427,7 @@ private extension View {
             await EpisodePlayer.open(
                 episodable: playlist,
                 episode: episode,
+                routerController: routerController,
                 accountController: accountController,
                 animeController: animeController
             )

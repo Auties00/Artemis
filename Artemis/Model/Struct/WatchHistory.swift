@@ -7,13 +7,17 @@
 
 import Foundation
 
-struct WatchHistoryDay: Identifiable, Equatable {
+class WatchHistoryDay: Identifiable, Equatable {
     let id: UUID
     let date: Date
-    let episodes: [Episode]
-    init(date: Date, episodes: [Episode]) {
-        self.id = UUID()
+    var episodes: [Episode]
+    init(id: UUID? = nil, date: Date, episodes: [Episode]) {
+        self.id = id ?? UUID()
         self.date = date
         self.episodes = episodes
+    }
+    
+    static func ==(rhs: WatchHistoryDay, lhs: WatchHistoryDay) -> Bool {
+        return rhs.id == lhs.id
     }
 }

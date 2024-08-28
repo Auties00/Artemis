@@ -70,6 +70,7 @@ struct WatchlistsView: View {
                             ExpandedView(geometry: geometry) {
                                 LoadingView()
                             }
+                            .id(UUID())
                         case .error(let error):
                             ExpandedView(geometry: geometry) {
                                 ErrorView(error: error)
@@ -154,7 +155,7 @@ struct WatchlistsView: View {
                         .id(WatchlistsView.headerId)
                 ) {
                     ForEach(filteredWatchlists) { watchlist in
-                        NavigationLink(value: NestedPageType.library(.watchlist(watchlist))) {
+                        NavigationLink(value: NestedPageType.librarySection(.watchlist(watchlist))) {
                             WatchlistCardView(watchlist: watchlist).contextMenu {
                                 watchlistCardContextMenu(watchlists: watchlists, watchlist: watchlist)
                             }
@@ -183,7 +184,7 @@ struct WatchlistsView: View {
     @ViewBuilder
     private func watchlistCardContextMenu(watchlists: Watchlists, watchlist: Watchlist) -> some View {
         Button {
-            routerController.path.append(NestedPageType.library(.watchlist(watchlist)))
+            routerController.path.append(NestedPageType.librarySection(.watchlist(watchlist)))
         } label: {
             Label("Open", systemImage: "arrow.forward")
         }

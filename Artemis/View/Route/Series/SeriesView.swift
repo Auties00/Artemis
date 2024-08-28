@@ -348,6 +348,7 @@ struct SeriesView: View {
                     EpisodePlayer.open(
                         episodable: season,
                         episode: episode,
+                        routerController: routerController,
                         accountController: accountController,
                         animeController: animeController
                     )
@@ -510,6 +511,7 @@ struct SeriesView: View {
             EpisodePlayer.open(
                 episodable: data.episodable.wrappedValue,
                 episode: episode,
+                routerController: routerController,
                 accountController: accountController,
                 animeController: animeController
             )
@@ -529,6 +531,7 @@ struct SeriesView: View {
             episodable: data.episodable.wrappedValue,
             episode: episode,
             nextEpisodes: nextEpisodes,
+            routerController: routerController,
             accountController: accountController,
             animeController: animeController
         )
@@ -541,6 +544,7 @@ struct SeriesView: View {
                 EpisodePlayer.open(
                     episodable: nil,
                     episode: episode,
+                    routerController: routerController,
                     accountController: accountController,
                     animeController: animeController
                 )

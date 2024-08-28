@@ -29,7 +29,7 @@ struct ScheduleCardView: View {
     
     var body: some View {
         Section(header: header()) {
-            NavigationLink(value: NestedPageType.schedule(entry.id)) {
+            NavigationLink(value: NestedPageType.scheduleEntry(entry.id)) {
                 HStack(alignment: .top, spacing: 0) {
                     NetworkImage(
                         url: entry.thumbnail,
@@ -88,7 +88,7 @@ struct ScheduleCardView: View {
     }
     
     private func openAnime() {
-        routerController.path.append(NestedPageType.schedule(entry.id))
+        routerController.path.append(NestedPageType.scheduleEntry(entry.id))
     }
     
     private func addToWatchlist() {

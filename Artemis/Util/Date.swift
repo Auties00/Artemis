@@ -31,6 +31,10 @@ extension Date {
             "dd/MM\(includeHour ? ", HH:mm" : "")"
         } else if(nowDay == episodeDay){
             "'Today'\(includeHour ? ", HH:mm" : "")"
+        } else if(nowDay == episodeDay + 1){
+            "'Yesterday'\(includeHour ? ", HH:mm" : "")"
+        }else if(nowDay == episodeDay - 1){
+            "'Tomorrow'\(includeHour ? ", HH:mm" : "")"
         } else {
             "EEEE\(includeHour ? ", HH:mm" : "")"
         }

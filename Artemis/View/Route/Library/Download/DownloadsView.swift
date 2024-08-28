@@ -115,7 +115,7 @@ struct DownloadsView: View {
     
     @ViewBuilder
     private func downloadCard(download: DownloadedEntry) -> some View {
-        NavigationLink(value: NestedPageType.library(.download(download))) {
+        NavigationLink(value: NestedPageType.librarySection(.download(download))) {
             HStack(alignment: .top) {
                 if let thumbnailUrl = download.wrappedValue.coverUrl {
                     NetworkImage(

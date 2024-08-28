@@ -10,6 +10,9 @@ import SwiftData
 import AVFoundation
 
 struct DownloadButtonView: View {
+    @Environment(RouterController.self)
+    private var routerController: RouterController
+    
     @Environment(AccountController.self)
     private var accountController: AccountController
     
@@ -69,6 +72,7 @@ struct DownloadButtonView: View {
                         EpisodePlayer.open(
                             episodable: nil,
                             episode: episode,
+                            routerController: routerController,
                             accountController: accountController,
                             animeController: animeController
                         )

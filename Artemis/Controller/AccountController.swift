@@ -162,7 +162,10 @@ class AccountController {
                         if case .episode(let episode) = bucketEntry {
                             if episode.episodeInformation == nil {
                                 group.addTask {
-                                    try await self.animeController.getEpisode(id: episode.id, includePlayback: false)
+                                    let result = try await self.animeController.getEpisode(id: episode.id, includePlayback: false)
+                                    result.watchProgress = episode.watchProgress
+                                    result.watchedAt = episode.watchedAt
+                                    return result
                                 }
                             }
                         }
@@ -180,10 +183,8 @@ class AccountController {
             for bucket in result.buckets {
                 var attributedEntries: [DescriptableEntry] = []
                 for bucketEntry in bucket.contentList {
-                    if case .episode(let episode) = bucketEntry {
-                        if let cachedEpisode = cachedEpisodes[episode.id] {
-                            attributedEntries.append(.episode(cachedEpisode))
-                        }
+                    if case .episode(let episode) = bucketEntry, let cachedEpisode = cachedEpisodes[episode.id] {
+                        attributedEntries.append(.episode(cachedEpisode))
                     }else {
                         attributedEntries.append(bucketEntry)
                     }
@@ -448,10 +449,7 @@ class AccountController {
         }
         
         withMutation(keyPath: \.dashboard) {
-            if let lastWatchedEpisodeIndex = continueWatchingBucket.contentList.firstIndex(where: { $0.id == episode.id || $0.parentId == episode.parentId } ) {
-                continueWatchingBucket.contentList.remove(at: lastWatchedEpisodeIndex)
-            }
-            
+            continueWatchingBucket.contentList.removeAll(where: { $0.id == episode.id || $0.parentId == episode.parentId } )
             continueWatchingBucket.contentList.insert(.episode(episode), at: 0)
         }
     }

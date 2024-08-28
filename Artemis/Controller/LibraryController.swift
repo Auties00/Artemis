@@ -142,7 +142,7 @@ class LibraryController {
             
             let response: WatchHistoryResponse = try await apiController.sendRequest(
                 method: "GET",
-                path: "v2/customer/history/vod?p=\(currentWatchHistoryPage)&rpp=10"
+                path: "v2/customer/history/vod?p=\(currentWatchHistoryPage)&rpp=25"
             )
             for episode in response.episodes {
                 if let episodeInformation = episode.episodeInformation {

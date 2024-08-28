@@ -19,10 +19,10 @@ enum RootPageType: Identifiable, CaseIterable {
 }
 
 enum NestedPageType: Hashable {
-    case home(DescriptableEntry, lastWatchedEpisode: Episode? = nil)
-    case library(LibraryPageType)
-    case search(SearchEntry)
-    case schedule(String)
+    case series(DescriptableEntry, lastWatchedEpisode: Episode? = nil)
+    case librarySection(LibraryPageType)
+    case searchResult(SearchEntry)
+    case scheduleEntry(String)
 }
 
 enum LibraryPageType: Hashable {

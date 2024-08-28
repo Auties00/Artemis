@@ -10,16 +10,21 @@ import AVKit
 import UIKit
 
 class EpisodePlayer: AVPlayerViewController {
-    private var playerId: String?
+    private static let heartbeatInterval = 15_000
+    
+    private let playerId: String
     private var episodable: (any Episodable)!
     private var episode: Episode
     private var nextEpisodes: [Episode]
+    private let routerController: RouterController
     private let accountController: AccountController
     private let animeController: AnimeController
     private let onDismiss: ((Episode) -> Void)?
     private let pipHandler: PictureInPictureHandler
     private var nextButton: UIView?
+    private var episodableTitleLabel: UIView?
     private var lastNextButtonClick: TimeInterval!
+    private var lastEpisodableTitleClick: TimeInterval!
     private var asset: AVURLAsset!
     private var subtitlesInjector: AVAssetResourceLoaderDelegate!
     private var fairplaySession: AVContentKeySession!
@@ -27,19 +32,22 @@ class EpisodePlayer: AVPlayerViewController {
     private var statusObserver: NSObject?
     private var languageObserver: (any NSObjectProtocol)?
     private var watchProgressObserver: Any?
+    private var watchProgressLastUpdate: Int64?
     
     // Couldn't find any other way to present the AVVideoPlayer full screen as the Apple TV app does
     // fullScreenCover doesn't have the same effect
     // Kind of annoying because we have to pass the environment variables into the constructor instead of using annotation magic
     // Apart from that all is good
-    static func open(episodable: Episodable?, episode: Episode, nextEpisodes: [Episode]? = nil, accountController: AccountController, animeController: AnimeController, onDismiss: ((Episode) -> Void)? = nil) {
-        let player = EpisodePlayer(episodable: episodable, episode: episode, nextEpisodes: nextEpisodes, accountController: accountController, animeController: animeController, onDismiss: onDismiss)
+    static func open(episodable: Episodable?, episode: Episode, nextEpisodes: [Episode]? = nil, routerController: RouterController, accountController: AccountController, animeController: AnimeController, onDismiss: ((Episode) -> Void)? = nil) {
+        let player = EpisodePlayer(episodable: episodable, episode: episode, nextEpisodes: nextEpisodes, routerController: routerController, accountController: accountController, animeController: animeController, onDismiss: onDismiss)
         UIApplication.rootViewController?.present(player, animated: true)
     }
     
-    private init(episodable: Episodable?, episode: Episode, nextEpisodes: [Episode]? = nil, accountController: AccountController, animeController: AnimeController, onDismiss: ((Episode) -> Void)?) {
+    private init(episodable: Episodable?, episode: Episode, nextEpisodes: [Episode]? = nil, routerController: RouterController, accountController: AccountController, animeController: AnimeController, onDismiss: ((Episode) -> Void)?) {
+        self.playerId = UUID().uuidString
         self.episodable = episodable
         self.episode = episode
+        self.routerController = routerController
         self.accountController = accountController
         self.animeController = animeController
         self.nextEpisodes = nextEpisodes ?? []
@@ -59,16 +67,16 @@ class EpisodePlayer: AVPlayerViewController {
     
     override func viewDidLoad() {
         Task { [weak self] in
-            await self?.preparePlayer()
+            await self?.preparePlayer(restoreProgress: true)
         }
     }
     
-    private func preparePlayer() async {
-        self.playerId = UUID().uuidString
+    private func preparePlayer(restoreProgress: Bool) async {
         guard let playerItem = await createPlayerItem() else {
             return
         }
         
+        self.watchProgressLastUpdate = nil
         if(self.nextEpisodes.isEmpty) {
             if let response = try? await self.animeController.getAdjacentEpisodes(id: self.episode.id) {
                 if let nextEpisodes = response.following {
@@ -95,7 +103,9 @@ class EpisodePlayer: AVPlayerViewController {
             let player = AVPlayer(playerItem: playerItem)
             let interval = CMTime(seconds: 15, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
             self.watchProgressObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { time in
-                self.saveProgress(last: false)
+                Task { [weak self] in
+                    await self?.saveProgress(last: false)
+                }
             }
             
             player.actionAtItemEnd = .none
@@ -109,7 +119,7 @@ class EpisodePlayer: AVPlayerViewController {
             self.player?.replaceCurrentItem(with: playerItem)
         }
         
-        if let watchProgress = episode.watchProgress {
+        if restoreProgress, let watchProgress = episode.watchProgress {
             await self.player?.seek(to: CMTime(value: Int64(watchProgress), timescale: 1))
         }
         
@@ -122,18 +132,13 @@ class EpisodePlayer: AVPlayerViewController {
     
     private nonisolated func handleStatus(item: AVPlayerItem) {
         Task { [weak self] in
-            guard let self = self else {
-                return
-            }
-            
             switch(item.status) {
             case .readyToPlay:
-                await self.addNextButton()
-                await self.configurePlayerItemLocale(playerItem: item)
+                await self?.addNextButton()
+                await self?.instrumentEpisodableTitleLabel()
+                await self?.configurePlayerItemLocale(playerItem: item)
             case .failed:
-                await MainActor.run {
-                    self.showError(error: item.error?.localizedDescription ?? "Unknown error")
-                }
+                await self?.showError(error: item.error?.localizedDescription ?? "Unknown error")
             default:
                 break
             }
@@ -142,10 +147,6 @@ class EpisodePlayer: AVPlayerViewController {
     
     private nonisolated func handleLanguage(item: AVPlayerItem) {
         Task { [weak self] in
-            guard let self = self else {
-                return
-            }
-            
             var audioLocale: String?
             if let audioGroup = try? await item.asset.loadMediaSelectionGroup(for: AVMediaCharacteristic.audible) {
                 let selectedOption = item.currentMediaSelection.selectedMediaOption(in: audioGroup)
@@ -162,10 +163,10 @@ class EpisodePlayer: AVPlayerViewController {
                 subtitlesLocale = selectedOption?.locale?.identifier
             }
             
-            if case .success(let profile) = accountController.profile, let profile = profile {
+            if case .success(let profile) = self?.accountController.profile, let profile = profile {
                 profile.preferences.audioLanguage = audioLocale
                 profile.preferences.subtitlesLanguage = subtitlesLocale ?? "false"
-                try? await accountController.updateProfile(profile: profile)
+                try? await self?.accountController.updateProfile(profile: profile)
             }
         }
     }
@@ -177,7 +178,9 @@ class EpisodePlayer: AVPlayerViewController {
                 self.watchProgressObserver = nil
             }
             
-            self.saveProgress(last: true)
+            Task {
+                await self.saveProgress(last: true)
+            }
             
             self.statusObserver = nil
             self.languageObserver = nil
@@ -257,6 +260,7 @@ class EpisodePlayer: AVPlayerViewController {
         seriesItem.value = self.episodable.parentTitle as NSString
         seriesItem.locale = Locale.current
         playerItem.externalMetadata.append(seriesItem)
+        
     }
     
     private func configurePlayerItemLocale(playerItem: AVPlayerItem) async {
@@ -279,7 +283,7 @@ class EpisodePlayer: AVPlayerViewController {
     
     private func addNextButton() {
         // The HStack of buttons at the top left
-        guard let controlsView = self.findView(parent: self.view, targetName: "AVMobileChromelessDisplayModeControlsView") else {
+        guard let controlsView = self.findViewByType(parent: self.view, targetName: "AVMobileChromelessDisplayModeControlsView") else {
             return
         }
         
@@ -289,7 +293,7 @@ class EpisodePlayer: AVPlayerViewController {
         }
         
         // The container, and theoretically only view, in controlsView, used to wrap the three buttons (close, pip, cast)
-        guard let controlsContainerView = self.findView(parent: controlsView, targetName: "AVMobileChromelessContainerView") else {
+        guard let controlsContainerView = self.findViewByType(parent: controlsView, targetName: "AVMobileChromelessContainerView") else {
             return
         }
         
@@ -320,6 +324,7 @@ class EpisodePlayer: AVPlayerViewController {
         let passthrough = UIButton()
         passthrough.translatesAutoresizingMaskIntoConstraints = false
         passthrough.backgroundColor = .clear
+        
         let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.onLongNext))
         longGesture.minimumPressDuration = 0
         passthrough.addGestureRecognizer(longGesture)
@@ -349,32 +354,105 @@ class EpisodePlayer: AVPlayerViewController {
         }
     }
     
+    private func instrumentEpisodableTitleLabel() {
+        // The VStack that contains the series' and the episode's title
+        guard let titleBar = self.findViewByType(parent: self.view, targetName: "AVMobileTitlebarView") else {
+            return
+        }
+        
+        // Find a label whose text matches the series' title set in beautifyPlayer
+        guard let episodableTitleLabel = self.findView(parent: titleBar, filter: {
+            return if let label = $0 as? UILabel, label.text == self.episodable.parentTitle {
+                true
+            }else {
+                false
+            }
+        }) else {
+            return
+        }
+        
+        self.episodableTitleLabel = episodableTitleLabel
+        if let label = episodableTitleLabel as? UILabel {
+            print(label.intrinsicContentSize)
+        }
+        let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(onLongTitle))
+        longGesture.minimumPressDuration = 0
+        episodableTitleLabel.isUserInteractionEnabled = true
+        episodableTitleLabel.addGestureRecognizer(longGesture)
+    }
+    
+    @objc
+    private func onLongTitle(gestureReconizer: UILongPressGestureRecognizer) {
+        switch(gestureReconizer.state) {
+        case .began:
+            lastEpisodableTitleClick = Date.timeIntervalSinceReferenceDate
+            UIView.animate {
+                self.episodableTitleLabel?.alpha = 0.5
+            }
+        case .ended:
+            let now = Date.timeIntervalSinceReferenceDate
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { // Not using animation completion because it doesn't give the effect I want
+                if(now - self.lastEpisodableTitleClick > 0.3) {
+                    return
+                }
+                
+                self.dismiss(animated: true)
+                if let nestedPage = self.routerController.path.last,
+                   case .series(let descriptableEntry, _) = nestedPage,
+                   descriptableEntry.wrappedValue.parentId == self.episodable.parentId {
+                     return
+                }
+                
+                if let playlist = self.episodable as? Playlist {
+                    self.routerController.path.append(NestedPageType.series(.playlist(playlist)))
+                }else if let season = self.episodable as? Season {
+                    self.routerController.path.append(NestedPageType.series(.season(season)))
+                }
+            }
+            
+            UIView.animate {
+                self.episodableTitleLabel?.alpha = 1
+            }
+        default:
+            break
+        }
+    }
+    
     @objc
     private func onNext() {
         guard let nextEpisode = self.nextEpisodes.first, nextEpisode.isValid else {
             return
         }
         
-        player?.pause()
-        self.saveProgress(last: true)
-        self.episode = nextEpisodes.removeFirst()
         Task { [weak self] in
-            await self?.preparePlayer()
+            self?.player?.pause()
+            await MainActor.run {
+                if let nextEpisode = self?.nextEpisodes.removeFirst() {
+                    self?.episode = nextEpisode
+                }
+            }
+            await self?.preparePlayer(restoreProgress: false)
         }
     }
     
-    private func findView(parent: UIView?, targetName: String) -> UIView? {
+    private func findViewByType(parent: UIView?, targetName: String) -> UIView? {
+        return findView(parent: parent) {
+            let descriptor = String(describing: $0.self)
+            return descriptor.localizedCaseInsensitiveContains(targetName)
+        }
+    }
+    
+    private func findView(parent: UIView?, filter: @escaping (UIView) -> Bool) -> UIView? {
         guard let parent = parent else {
             return nil
         }
         
         for child in parent.subviews {
-            let descriptor = String(describing: child.self)
-            if(descriptor.localizedCaseInsensitiveContains(targetName)) {
+            if(filter(child)) {
                 return child
             }
             
-            guard let nestedView = findView(parent: child, targetName: targetName) else {
+            guard let nestedView = findView(parent: child, filter: filter) else {
                 continue
             }
             
@@ -384,34 +462,26 @@ class EpisodePlayer: AVPlayerViewController {
         return nil
     }
     
-    private nonisolated func saveProgress(last: Bool) {
-        Task { [weak self] in
-            guard let self = self else {
-                return
-            }
-            
-            guard let playerId = await self.playerId else {
-                return
-            }
-            
-            guard let playerItem = await self.player?.currentItem else {
-                return
-            }
-            
-            let playing = await self.player?.timeControlStatus == .playing
-            if(!last && !playing) {
-                return
-            }
-            
-            if let progress = await self.player?.currentTime().seconds {
-                await self.episode.watchProgress = Int(progress)
-                await self.episode.watchedAt = Date.now.millisecondsSince1970
-            }
-            
-            let episodeId = await self.episode.id
-            let progress = Int(playerItem.currentTime().seconds)
-            try? await animeController.saveWatchProgress(cid: playerId, id: episodeId, progress: progress, last: last)
+    private nonisolated func saveProgress(last: Bool) async {
+        let now = Date.now.millisecondsSince1970
+        if !last, let watchProgressLastUpdate = await self.watchProgressLastUpdate, now - watchProgressLastUpdate < EpisodePlayer.heartbeatInterval {
+            return
         }
+        
+        await MainActor.run {
+            self.watchProgressLastUpdate = now
+        }
+        
+        guard let playerItem = await self.player?.currentItem else {
+            return
+        }
+        
+        let progress = Int(await self.player?.currentTime().seconds ?? 0)
+        await self.episode.watchProgress = Int(progress)
+        await self.episode.watchedAt = Date.now.millisecondsSince1970
+        
+        let episodeId = await self.episode.id
+        try? await animeController.saveWatchProgress(cid: playerId, id: episodeId, progress: progress, last: last)
     }
     
     private func showError(error: String) {
@@ -421,11 +491,19 @@ class EpisodePlayer: AVPlayerViewController {
         })
         self.present(alert, animated: true)
     }
+    
+    private func printView(view: UIView, level: Int) {
+            for child in view.subviews {
+                print("\(String(repeating: "  ", count: level)) -> \(String(describing: child))")
+                printView(view: child, level: level + 1)
+            }
+        }
 }
 
 private class PictureInPictureHandler: NSObject, AVPlayerViewControllerDelegate {
     func playerViewController(_ playerViewController: AVPlayerViewController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
         UIApplication.rootViewController?.present(playerViewController, animated: true)
+        completionHandler(true)
     }
 }
 

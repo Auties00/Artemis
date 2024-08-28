@@ -28,7 +28,7 @@ struct LibraryView: View {
     
     @ViewBuilder
     private func item(destination: LibraryPageType, icon: String, label: String) -> some View {
-        NavigationLink(value: NestedPageType.library(destination)) {
+        NavigationLink(value: NestedPageType.librarySection(destination)) {
             HStack {
                 Image(systemName: icon)
                     .resizable()

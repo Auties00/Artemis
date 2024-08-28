@@ -10,7 +10,7 @@ import SwiftUI
 
 @Observable
 class RouterController {
-    var path: NavigationPath = NavigationPath()
+    var path: [NestedPageType] = []
     
     private var doubleTapHandler: (() -> Bool)?
     var pathHandler: () -> Bool {

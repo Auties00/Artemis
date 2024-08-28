@@ -48,6 +48,7 @@ struct WatchHistoryView: View {
                             ExpandedView(geometry: geometry) {
                                 LoadingView()
                             }
+                            .id(UUID())
                         case .error(let error):
                             ExpandedView(geometry: geometry) {
                                 ErrorView(error: error)
@@ -113,7 +114,7 @@ struct WatchHistoryView: View {
                 }
             }else {
                 ForEach(filteredWatchHistoryDays) { watchHistoryDay in
-                    dayCard(watchHistoryDay: watchHistoryDay, filteredWatchHistoryDays: filteredWatchHistoryDays)
+                    dayCard(watchHistoryDay: watchHistoryDay, first: filteredWatchHistoryDays.first == watchHistoryDay)
                 }
                 
                 if(libraryController.moreWatchHistoryAvailable) {
@@ -127,8 +128,8 @@ struct WatchHistoryView: View {
     }
     
     @ViewBuilder
-    private func dayCard(watchHistoryDay: WatchHistoryDay, filteredWatchHistoryDays: [WatchHistoryDay]) -> some View {
-        Section(header: dateHeader(watchHistoryDay: watchHistoryDay, filteredWatchHistoryDays: filteredWatchHistoryDays)) {
+    private func dayCard(watchHistoryDay: WatchHistoryDay, first: Bool) -> some View {
+        Section(header: dateHeader(date: watchHistoryDay.date, first: first)) {
             LazyVStack(alignment: .leading) {
                 let filteredEpisodes = searchText.isEmpty ? watchHistoryDay.episodes : watchHistoryDay.episodes.filter {
                     $0.title.localizedCaseInsensitiveContains(searchText) || $0.description.localizedCaseInsensitiveContains(searchText)
@@ -139,6 +140,7 @@ struct WatchHistoryView: View {
                             EpisodePlayer.open(
                                 episodable: entry.episodeInformation?.season,
                                 episode: entry,
+                                routerController: routerController,
                                 accountController: accountController,
                                 animeController: animeController
                             )
@@ -153,8 +155,8 @@ struct WatchHistoryView: View {
                                 Spacer()
                                     .frame(width: 12)
                                 VStack(alignment: .leading) {
-                                    if let seasonTitle = entry.episodeInformation?.season?.parentTitle {
-                                        Text(seasonTitle)
+                                    if let seriesTitle = entry.episodeInformation?.season?.parentTitle {
+                                        Text(seriesTitle)
                                             .font(.system(size: 20))
                                             .fontWeight(.bold)
                                             .lineLimit(2)
@@ -183,9 +185,9 @@ struct WatchHistoryView: View {
     }
     
     @ViewBuilder
-    private func dateHeader(watchHistoryDay: WatchHistoryDay, filteredWatchHistoryDays: [WatchHistoryDay]) -> some View {
-        let headerText = Text(watchHistoryDay.date.toRelativeString(includeHour: false))
-        if(watchHistoryDay == filteredWatchHistoryDays.first) {
+    private func dateHeader(date: Date, first: Bool) -> some View {
+        let headerText = Text(date.toRelativeString(includeHour: false))
+        if(first) {
             headerText
                 .onAppear {
                     self.shouldScrollToHeader = false

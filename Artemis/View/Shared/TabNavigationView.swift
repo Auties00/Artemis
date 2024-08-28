@@ -92,18 +92,18 @@ struct TabNavigationView<Content>: View where Content : View{
     @ViewBuilder
     private func handleDestination(destination: NestedPageType) -> some View {
         switch(destination) {
-        case .schedule(let identifier):
+        case .scheduleEntry(let identifier):
             SeriesView(
                 identifier: identifier
             )
-        case .search(let searchEntry):
+        case .searchResult(let searchEntry):
             let _ = hideKeyboard() // Dismiss keyboard from search 
             SeriesView(
                 id: searchEntry.id,
                 name: searchEntry.name,
                 playlist: searchEntry.type == "VOD_PLAYLIST"
             )
-        case .home(let bucketEntry, let lastWatchedEpisode):
+        case .series(let bucketEntry, let lastWatchedEpisode):
             let playlist = if case .playlist = bucketEntry {
                 true
             } else {
@@ -115,7 +115,7 @@ struct TabNavigationView<Content>: View where Content : View{
                 playlist: playlist,
                 selectedSeasonNumber: lastWatchedEpisode?.episodeInformation?.seasonNumber
             )
-        case .library(let libraryPageType):
+        case .librarySection(let libraryPageType):
             switch(libraryPageType) {
             case .downloads:
                 DownloadsView()

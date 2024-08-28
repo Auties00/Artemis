@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @Observable
 class Episode: Codable, Equatable, Hashable, Identifiable, Descriptable, Savable  {
@@ -170,7 +171,6 @@ struct EpisodeInformation: Codable, Equatable, Hashable {
         try container.encode(self.seasonNumber, forKey: .seasonNumber)
         try container.encode(self.episodeNumber, forKey: .episodeNumber)
         try container.encode(self.seasonId, forKey: .season)
-       
     }
 }
 

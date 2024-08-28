@@ -47,6 +47,7 @@ struct WatchlistView: View {
                         ExpandedView(geometry: geometry) {
                             LoadingView()
                         }
+                        .id(UUID())
                     case .error(let error):
                         ExpandedView(geometry: geometry) {
                             ErrorView(error: error)
@@ -78,15 +79,34 @@ struct WatchlistView: View {
                 )
             }
         }
+        .refreshable {
+            if(accountController.profile.value == nil) {
+                await accountController.login()
+            }
+            
+            await loadWatchlist(refresh: true)
+        }
         .task {
             if case .empty = contentResult {
-                do {
-                    self.contentResult = .loading
-                    self.contentResult = .success(try await libraryController.getWatchlistContent(watchlist: watchlist))
-                }catch let error {
-                    self.contentResult = .error(error)
+                await loadWatchlist(refresh: false)
+            }
+        }
+    }
+    
+    private func loadWatchlist(refresh: Bool) async {
+        do {
+            let startTime = Date.now.millisecondsSince1970
+            self.contentResult = .loading
+            let result = try await libraryController.getWatchlistContent(watchlist: watchlist)
+            if(refresh) {
+                let sleepTime = 750 - (Date.now.millisecondsSince1970 - startTime)
+                if sleepTime > 0 {
+                    try? await Task.sleep(for: .milliseconds(sleepTime))
                 }
             }
+            self.contentResult = .success(result)
+        }catch let error {
+            self.contentResult = .error(error)
         }
     }
     
@@ -174,6 +194,7 @@ struct WatchlistView: View {
                     EpisodePlayer.open(
                         episodable: nil,
                         episode: episode,
+                        routerController: routerController,
                         accountController: accountController,
                         animeController: animeController
                     )
@@ -181,20 +202,16 @@ struct WatchlistView: View {
                     Label("Play", systemImage: "play")
                 }
                 
-            }else {
-                Button {
-                    routerController.path.append(NestedPageType.home(watchlistEntry))
-                } label: {
-                    Label("Open", systemImage: "arrow.forward")
-                }
             }
             
-            if case .episode(let episode) = watchlistEntry, let season = episode.episodeInformation?.season {
-                Button {
-                    routerController.path.append(NestedPageType.home(.season(season)))
-                } label: {
-                    Label("Go to Anime", systemImage: "info.circle")
+            Button {
+                if case .episode(let episode) = watchlistEntry, let season = episode.episodeInformation?.season {
+                    routerController.path.append(NestedPageType.series(.season(season)))
+                }else {
+                    routerController.path.append(NestedPageType.series(watchlistEntry))
                 }
+            } label: {
+                Label("Go to Anime", systemImage: "info.circle")
             }
             
             Button {
@@ -218,6 +235,7 @@ struct WatchlistView: View {
                     EpisodePlayer.open(
                         episodable: nil,
                         episode: episode,
+                        routerController: routerController,
                         accountController: accountController,
                         animeController: animeController
                     )
@@ -228,7 +246,7 @@ struct WatchlistView: View {
             )
             .buttonStyle(.plain)
         }else {
-            NavigationLink(value: NestedPageType.home(watchlistEntry)) {
+            NavigationLink(value: NestedPageType.series(watchlistEntry)) {
                 entryCard(watchlistEntry: watchlistEntry)
             }
         }

@@ -14,7 +14,7 @@ struct SearchEntryView: View {
     }
     
     var body: some View {
-        NavigationLink(value: NestedPageType.search(entry)) {
+        NavigationLink(value: NestedPageType.searchResult(entry)) {
             HStack(alignment: .top, spacing: 0) {
                 NetworkImage(
                     url: entry.coverUrl,

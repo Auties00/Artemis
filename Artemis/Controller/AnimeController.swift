@@ -198,11 +198,20 @@ class AnimeController {
     }
     
     func saveWatchProgress(cid: String, id: Int, progress: Int, last: Bool) async throws {
-        let request = WatchProgressRequest(video: id, cid: cid, startedAt: Date.now.millisecondsSince1970, action: 2, ctx: 0, progress: progress, nature: last ? "last" : nil)
+        let request = WatchProgressRequest(
+            video: id,
+            cid: cid,
+            startedAt: Date.now.millisecondsSince1970,
+            action: 2,
+            ctx: 0,
+            progress: progress,
+            nature: last ? "last" : nil
+        )
         let _ = try await apiController.sendRequest(
             method: "POST",
             url: "https://guide.imggaming.com/prod",
-            data: [request]
+            data: [request],
+            log: true
         )
     }
     

@@ -11,9 +11,6 @@ struct AccountInformationSection: View {
     @State
     private var details: AsyncResult<Details> = .empty
     
-    @State
-    private var billingDetailsTask: Task<Void, Error>?
-    
     @Environment(AccountController.self)
     private var accountController: AccountController
     
@@ -60,110 +57,44 @@ struct AccountInformationSection: View {
         
         Section(header: Text("Contact Information")) {
             LabeledContent {
-                TextField("Email", text: $detailsBinding.email)
-                    .disabled(true)
-                    .colorMultiply(.gray)
-                    .autocapitalization(.none)
-                    .autocorrectionDisabled()
-                    .keyboardType(.emailAddress)
-                    .textContentType(.emailAddress)
-                    .multilineTextAlignment(.trailing)
+                Text(detailsBinding.email)
             } label: {
                 Text("Email")
             }
             
-            TextFieldSection(
-                hint: "Type a full name",
-                title: "Full name",
-                value: $detailsBinding.fullName
-            ) {
-                updateBillingDetails(details: details, address: detailsBinding.address, instant: false)
+            LabeledContent {
+                Text(detailsBinding.fullName)
+            } label: {
+                Text("Full name")
             }
         }
         
         Section(header: Text(details.address.label)) {
-            optionSelector(
-                title: "Country",
-                options: Array(details.metadata.countries.keys),
-                selection: $detailsBinding.address.countryCode,
-                displayName: { entry in
-                    if let entry = entry {
-                        return details.metadata.countries[entry]?.name
-                    }else {
-                        return nil
-                    }
-                },
-                onChange: {
-                    updateBillingDetails(details: details, address: detailsBinding.address, instant: true)
+            LabeledContent {
+                if let entry = details.address.countryCode {
+                    Text(details.metadata.countries[entry]?.name ?? "")
                 }
-            )
+            } label: {
+                Text("Country")
+            }
             
             let selectedCountryCode = details.address.countryCode ?? ""
             let selectedCountry = details.metadata.countries[selectedCountryCode]
             if let selectedStateField = selectedCountry?.addressRequiredFields["administrativeLevel1"] {
-                optionSelector(
-                    title: "State",
-                    options: Array(selectedStateField.acceptableValues.keys),
-                    selection: $detailsBinding.address.administrativeLevel1,
-                    displayName: { entry in
-                        if let entry = entry {
-                            return selectedStateField.acceptableValues[entry]
-                        }else {
-                            return nil
-                        }
-                    },
-                    onChange: {
-                        updateBillingDetails(details: details, address: detailsBinding.address, instant: true)
+                LabeledContent {
+                    if let entry = details.address.administrativeLevel1 {
+                        Text(selectedStateField.acceptableValues[entry] ?? "")
                     }
-                )
-            }
-            
-            TextFieldSection(
-                hint: "Type a zip code",
-                title: "ZIP Code",
-                value: $detailsBinding.address.postalCode
-            ) {
-                updateBillingDetails(details: details, address: detailsBinding.address, instant: false)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func optionSelector<Child: Hashable>(title: String, options: [Child?], selection: Binding<Child?>, displayName: @escaping (Child?) -> String?, onChange: @escaping () -> Void)  -> some View {
-        NavigationLink {
-            List {
-                Section(header: Text("Select a \(title)")) {
-                    Picker(title, selection: selection) {
-                        ForEach(options, id: \.self) { key in
-                            Text(displayName(key) ?? "")
-                        }
-                    }
-                    .pickerStyle(.inline)
-                    .labelsHidden()
+                } label: {
+                    Text("State")
                 }
             }
-            .navigationTitle(title)
-            .navigationBarTitleDisplayMode(.inline)
-            .onChange(of: selection.wrappedValue) { _, _ in
-                onChange()
+            
+            LabeledContent {
+                Text(detailsBinding.address.postalCode)
+            } label: {
+                Text("ZIP Code")
             }
-        } label: {
-            Text(title)
-            Spacer()
-                .frame(maxWidth: .infinity)
-            Text(displayName(selection.wrappedValue) ?? "")
-                .foregroundColor(.secondary)
-                .layoutPriority(1)
-        }
-    }
-    
-    private func updateBillingDetails(details: Details, address: Address, instant: Bool) {
-        self.billingDetailsTask?.cancel()
-        self.billingDetailsTask = Task {
-            if(!instant) {
-                try await Task.sleep(for: .milliseconds(500))
-            }
-            try await accountController.updateBillingDetails(email: details.email, fullName: details.fullName, address: address)
         }
     }
 }

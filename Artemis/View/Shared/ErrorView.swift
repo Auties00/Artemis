@@ -59,7 +59,7 @@ struct ErrorView: View {
             actions: {
                 if(showDownloads) {
                     Button("Show Downloads") {
-                        routerController.path.append(NestedPageType.library(.downloads))
+                        routerController.path.append(NestedPageType.librarySection(.downloads))
                     }
                     .buttonStyle(.borderedProminent)
                 }
