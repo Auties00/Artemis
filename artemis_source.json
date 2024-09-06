@@ -3,15 +3,19 @@
   "subtitle": "A source for all of my apps",
   "description": "Welcome to my source! Here you'll find all of my apps.",
   "website": "https://github.com/Auties00/Artemis",
-  "tintColor": "0A84FF",
+  "tintColor": "F1533E",
+  "iconURL": "https://avatars.githubusercontent.com/u/28218457?v=4",
+  "featuredApps": [
+     "com.github.auties00.artemis"
+  ],
   "apps": [
     {
       "name": "Artemis",
       "bundleIdentifier": "com.github.auties00.artemis",
       "developerName": "Auties00",
       "subtitle": "Alternative client for HIDIVE",
-      "localizedDescription": "",
-      "iconURL": "https://picsum.photos/seed/com.github.auties00.artemis/512/512",
+      "localizedDescription": "Artemis is an alternative and open source streaming client for HIDIVE",
+      "iconURL": "https://github.com/Auties00/Artemis/blob/main/Artemis/Assets.xcassets/AppIcon.appiconset/appstore.png?raw=true",
       "tintColor": "0A84FF",
       "category": "entertainment",
       "screenshots": [
