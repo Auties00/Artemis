@@ -10,7 +10,7 @@ import AVKit
 import UIKit
 
 class EpisodePlayer: AVPlayerViewController {
-    private static let heartbeatInterval = 15_000
+    private static let heartbeatInterval: Double = 15
     
     private let playerId: String
     private var episodable: (any Episodable)!
@@ -32,7 +32,6 @@ class EpisodePlayer: AVPlayerViewController {
     private var statusObserver: NSObject?
     private var languageObserver: (any NSObjectProtocol)?
     private var watchProgressObserver: Any?
-    private var watchProgressLastUpdate: Int64?
     
     // Couldn't find any other way to present the AVVideoPlayer full screen as the Apple TV app does
     // fullScreenCover doesn't have the same effect
@@ -76,7 +75,6 @@ class EpisodePlayer: AVPlayerViewController {
             return
         }
         
-        self.watchProgressLastUpdate = nil
         if(self.nextEpisodes.isEmpty) {
             if let response = try? await self.animeController.getAdjacentEpisodes(id: self.episode.id) {
                 if let nextEpisodes = response.following {
@@ -100,14 +98,7 @@ class EpisodePlayer: AVPlayerViewController {
         await beautifyPlayerItem(playerItem: playerItem)
         
         if(self.player == nil) {
-            let player = AVPlayer(playerItem: playerItem)
-            let interval = CMTime(seconds: 15, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-            self.watchProgressObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { time in
-                Task { [weak self] in
-                    await self?.saveProgress(last: false)
-                }
-            }
-            
+            let player = AVQueuePlayer(playerItem: playerItem)
             player.actionAtItemEnd = .none
             player.appliesMediaSelectionCriteriaAutomatically = true
             await MainActor.run {
@@ -115,12 +106,20 @@ class EpisodePlayer: AVPlayerViewController {
             }
             NotificationCenter.default.addObserver(self, selector: #selector(onNext), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
         }else {
-            nextButton?.removeFromSuperview()
             self.player?.replaceCurrentItem(with: playerItem)
         }
         
         if restoreProgress, let watchProgress = episode.watchProgress {
             await self.player?.seek(to: CMTime(value: Int64(watchProgress), timescale: 1))
+        }
+        
+        if(watchProgressObserver == nil) {
+            let interval = CMTime(seconds: EpisodePlayer.heartbeatInterval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+            self.watchProgressObserver = self.player?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { time in
+                Task { [weak self] in
+                    await self?.saveProgress(last: false)
+                }
+            }
         }
         
         let audioSession = AVAudioSession.sharedInstance()
@@ -260,7 +259,6 @@ class EpisodePlayer: AVPlayerViewController {
         seriesItem.value = self.episodable.parentTitle as NSString
         seriesItem.locale = Locale.current
         playerItem.externalMetadata.append(seriesItem)
-        
     }
     
     private func configurePlayerItemLocale(playerItem: AVPlayerItem) async {
@@ -424,8 +422,15 @@ class EpisodePlayer: AVPlayerViewController {
             return
         }
         
+        nextButton?.removeFromSuperview()
+        if let queuePlayer = self.player as? AVQueuePlayer {
+            queuePlayer.removeAllItems()
+        } else {
+            self.player?.pause()
+            self.player = nil
+        }
+        
         Task { [weak self] in
-            self?.player?.pause()
             await MainActor.run {
                 if let nextEpisode = self?.nextEpisodes.removeFirst() {
                     self?.episode = nextEpisode
@@ -462,26 +467,15 @@ class EpisodePlayer: AVPlayerViewController {
         return nil
     }
     
-    private nonisolated func saveProgress(last: Bool) async {
-        let now = Date.now.millisecondsSince1970
-        if !last, let watchProgressLastUpdate = await self.watchProgressLastUpdate, now - watchProgressLastUpdate < EpisodePlayer.heartbeatInterval {
+    private func saveProgress(last: Bool) async {
+        guard let currentTime = self.player?.currentTime().seconds, currentTime.isFinite else {
             return
         }
         
-        await MainActor.run {
-            self.watchProgressLastUpdate = now
-        }
-        
-        guard let playerItem = await self.player?.currentItem else {
-            return
-        }
-        
-        let progress = Int(await self.player?.currentTime().seconds ?? 0)
-        await self.episode.watchProgress = Int(progress)
-        await self.episode.watchedAt = Date.now.millisecondsSince1970
-        
-        let episodeId = await self.episode.id
-        try? await animeController.saveWatchProgress(cid: playerId, id: episodeId, progress: progress, last: last)
+        self.episode.watchProgress = Int(currentTime)
+        self.episode.watchedAt = Date.now.millisecondsSince1970
+        let episodeId = self.episode.id
+        try? await animeController.saveWatchProgress(cid: playerId, id: episodeId, progress: Int(currentTime), last: last)
     }
     
     private func showError(error: String) {

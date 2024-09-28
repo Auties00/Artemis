@@ -449,7 +449,15 @@ class AccountController {
         }
         
         withMutation(keyPath: \.dashboard) {
-            continueWatchingBucket.contentList.removeAll(where: { $0.id == episode.id || $0.parentId == episode.parentId } )
+            continueWatchingBucket.contentList.removeAll(where: {
+                guard let continueWatchingEpisode = $0.wrappedValue as? Episode else {
+                    return false
+                }
+                
+                return continueWatchingEpisode.id == episode.id
+                        || continueWatchingEpisode.episodeInformation?.seasonId == episode.episodeInformation?.seasonId
+                        || continueWatchingEpisode.episodeInformation?.season?.series?.id == episode.episodeInformation?.season?.series?.id
+            })
             continueWatchingBucket.contentList.insert(.episode(episode), at: 0)
         }
     }

@@ -373,7 +373,7 @@ class LibraryController {
         downloadTask.resume()
     }
     
-    // POSSIBLE IMPROVEMENT: Find a way to determine if updaring the entry is necessary
+    // POSSIBLE IMPROVEMENT: Find a way to determine if updating the entry is necessary
     private func saveDownload(downloadEntry: DownloadableEntry) async throws {
         guard let downloadedEntry = try await createDownload(downloadEntry: downloadEntry) else {
             return
