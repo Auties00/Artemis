@@ -1,0 +1,70 @@
+{
+  "name": "Auties00",
+  "identifier": "com.github.auties00",
+  "subtitle": "A source for all of my apps",
+  "description": "Welcome to my source! Here you'll find all of my apps.",
+  "website": "https://github.com/Auties00/Artemis",
+  "tintColor": "F1533E",
+  "iconURL": "https://avatars.githubusercontent.com/u/28218457?v=4",
+  "featuredApps": [
+    "com.github.auties00.artemis"
+  ],
+  "apps": [
+    {
+      "name": "Artemis",
+      "bundleIdentifier": "com.github.auties00.artemis",
+      "developerName": "Auties00",
+      "subtitle": "Alternative client for HIDIVE",
+      "localizedDescription": "Artemis is an alternative and open source streaming client for HIDIVE",
+      "iconURL": "https://github.com/Auties00/Artemis/blob/main/Artemis/Assets.xcassets/AppIcon.appiconset/appstore.png?raw=true",
+      "tintColor": "0A84FF",
+      "category": "entertainment",
+      "marketplaceID": "6630385154",
+      "screenshots": [
+        {
+          "imageURL": "https://github.com/user-attachments/assets/88bd1a37-0f10-4fba-b6e9-6bf3174b87a8"
+        },
+        {
+          "imageURL": "https://github.com/user-attachments/assets/99249893-1532-40ca-8c61-f65869e1ecca"
+        },
+        {
+          "imageURL": "https://github.com/user-attachments/assets/ee6fc0aa-2a3b-4abe-bab6-0eaa6019547b"
+        },
+        {
+          "imageURL": "https://github.com/user-attachments/assets/2d053217-3b56-482e-a7af-2baa006d545a"
+        },
+        {
+          "imageURL": "https://github.com/user-attachments/assets/ea555ebc-95d1-435b-b840-fbe82184892a"
+        }
+      ],
+      "versions": [
+        {
+          "version": "2.0",
+          "buildVersion": "16",
+          "date": "2024-09-28T11:39:01+02:00",
+          "localizedDescription": "Bug fixes and improvements.",
+          "downloadURL": "https://github.com/Auties00/Artemis/releases/download/2.0-16/artemis.ipa",
+          "size": 2832019,
+          "sha256": "c714ab0cc5611c148b591e53e5eba80aef25e4a7c6742a4488f19a68ebc61f36",
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "2.0",
+          "buildVersion": "15",
+          "date": "2024-09-06T12:05:38+02:00",
+          "localizedDescription": "First AltStore release",
+          "downloadURL": "https://github.com/Auties00/Artemis/releases/download/2.0/Artemis.ipa",
+          "size": 1690819,
+          "sha256": "de48ea0fdcd0241aaeb37fcad72797f9d16caf611dab42bc889f6597304a5ece",
+          "minOSVersion": "17.0"
+        }
+      ],
+      "appPermissions": {
+        "privacy": {},
+        "entitlements": [
+          "beta-reports-active"
+        ]
+      }
+    }
+  ]
+}
