@@ -19,7 +19,6 @@
       "iconURL": "https://github.com/Auties00/Artemis/blob/main/Artemis/Assets.xcassets/AppIcon.appiconset/appstore.png?raw=true",
       "tintColor": "0A84FF",
       "category": "entertainment",
-      "marketplaceID": "6630385154",
       "screenshots": [
         {
           "imageURL": "https://github.com/user-attachments/assets/88bd1a37-0f10-4fba-b6e9-6bf3174b87a8"
@@ -61,9 +60,7 @@
       ],
       "appPermissions": {
         "privacy": {},
-        "entitlements": [
-          "beta-reports-active"
-        ]
+        "entitlements": []
       }
     }
   ]
