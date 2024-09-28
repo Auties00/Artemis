@@ -7,11 +7,11 @@ Make sure to click the correct button based on your AltStore version
 
 - AltStore World
   
-[<img src="https://github.com/user-attachments/assets/9483966d-d845-463d-a860-45982fb45dd7" width="250">](https://tinyurl.com/ArtemisSource)
+[<img src="https://github.com/user-attachments/assets/9483966d-d845-463d-a860-45982fb45dd7" width="250">](https://tinyurl.com/ArtemisWorld)
 
 - AltStore PAL (only available in Europe)
   
-[<img src="https://github.com/user-attachments/assets/9483966d-d845-463d-a860-45982fb45dd7" width="250">](https://tinyurl.com/ArtemisWorld)
+[<img src="https://github.com/user-attachments/assets/9483966d-d845-463d-a860-45982fb45dd7" width="250">](https://tinyurl.com/ArtemisPAL)
 
 ### Screenshots (iPhone)
 
