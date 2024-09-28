@@ -3,15 +3,12 @@ Artemis is an alternative, and open source, client for [HIDIVE](https://www.hidi
 Currently only iOS is supported, but I plan to adapt the UI for iPadOS and TvOS in the future
 
 ### Download
-Make sure to click the correct button based on your AltStore version
 
-- AltStore World
+- [iTunes](https://tinyurl.com/ArtemisItunes)
   
-[<img src="https://github.com/user-attachments/assets/9483966d-d845-463d-a860-45982fb45dd7" width="250">](https://tinyurl.com/ArtemisWorld)
+- [AltStore World](https://tinyurl.com/ArtemisWorld)
 
-- AltStore PAL (only available in Europe)
-  
-[<img src="https://github.com/user-attachments/assets/9483966d-d845-463d-a860-45982fb45dd7" width="250">](https://tinyurl.com/ArtemisPAL)
+- [AltStore PAL ](https://tinyurl.com/ArtemisPAL)
 
 ### Screenshots (iPhone)
 
