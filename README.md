@@ -6,7 +6,7 @@ Currently only iOS is supported, but I plan to adapt the UI for iPadOS and TvOS 
   
 - [AltStore World](https://tinyurl.com/ArtemisWorld)
 
-- [AltStore PAL ](https://tinyurl.com/ArtemisPAL)
+- [AltStore PAL](https://tinyurl.com/AltStoreSourceEU)
 
 ### Screenshots (iPhone)
 
