@@ -42,6 +42,7 @@
           "version": "2.0",
           "buildVersion": "16",
           "date": "2024-09-28T11:39:01+02:00",
+          "size": 6720959,
           "downloadURL": "https://productionresultssa10.blob.core.windows.net/actions-results/53137c19-40c7-48e8-ae1d-7404bcc7f244/workflow-job-run-0045cb27-c62f-5d66-4040-1df2992a9785/artifacts/e982fec3718e8995a73e7be67bb35b1af90300e6b69c49adaad5537e1675cfc8.zip?rscd=attachment%3B+filename%3D%229195939e-ce17-490f-a294-7e7e7cee8c11.zip%22&se=2024-10-01T18%3A58%3A39Z&sig=rld2Op3hUjZ%2FRGsWreGvQAuQ5azx%2BipwWENZ%2FaTK9YM%3D&ske=2024-10-02T04%3A46%3A29Z&skoid=ca7593d4-ee42-46cd-af88-8b886a2f84eb&sks=b&skt=2024-10-01T16%3A46%3A29Z&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skv=2024-08-04&sp=r&spr=https&sr=b&st=2024-10-01T18%3A48%3A34Z&sv=2024-08-04",
           "minOSVersion": "17.0"
         }
