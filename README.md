@@ -3,10 +3,16 @@ Artemis is an alternative, and open source, client for [HIDIVE](https://www.hidi
 Currently only iOS is supported, but I plan to adapt the UI for iPadOS and TvOS in the future
 
 ### Download
-  
-- [AltStore World](https://tinyurl.com/ArtemisWorld)
 
-- [AltStore PAL](https://tinyurl.com/ArtemisPALVerified)
+Despite trying, I couldn't get Artemis on the App Store as Apple doesn't allow third party clients that use reverse engineered HTTP apis, which is fair enough. 
+As I wanted the download to be accessible to non-technical people, I've deployed the app on the [AltStore](https://altstore.io/). 
+To install Artemis:
+
+1. Follow the instructions to download [AltStore](https://altstore.io/#Downloads) based on your region
+2. Add my repository to the store by clicking the correct link:
+   - [AltStore World](https://tinyurl.com/ArtemisWorld)
+   - [AltStore PAL](https://tinyurl.com/ArtemisPALVerified)
+3. Tap on the Artemis app page from the AltStore and download the app
 
 ### Screenshots (iPhone)
 
