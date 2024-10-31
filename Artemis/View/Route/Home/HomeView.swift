@@ -42,7 +42,7 @@ struct HomeView: View {
     
     var body: some View {
         TabNavigationView(title: "Home") {
-            let result = GeometryReader { geometry in
+            GeometryReader { geometry in
                 ScrollViewReader { scrollProxy in
                     ScrollView {
                         switch(accountController.dashboard) {
@@ -63,8 +63,8 @@ struct HomeView: View {
                             ExpandedView(geometry: geometry, heightExtension: HomeView.scrollViewFullHeightOffset) {
                                 LoadingView()
                                     .onAppear {
-                                    calculateTopScrollOffset(geometry: geometry)
-                                }
+                                        calculateTopScrollOffset(geometry: geometry)
+                                    }
                             }
                         case .error(error: let error):
                             ExpandedView(geometry: geometry, heightExtension: HomeView.scrollViewFullHeightOffset) {
@@ -75,23 +75,18 @@ struct HomeView: View {
                             }
                         }
                     }
+                    .background(Color(UIColor.systemGroupedBackground))
                     .introspect(.scrollView, on: .iOS(.v17, .v18)) { scrollView in
                         self.scrollView = scrollView
                     }
                 }
             }
-                .refreshable {
-                    if(accountController.profile.value == nil) {
-                        await accountController.login()
-                    }
-                    
-                    await accountController.loadDashboard()
+            .refreshable {
+                if(accountController.profile.value == nil) {
+                    await accountController.login()
                 }
-            if(UIDevice.current.userInterfaceIdiom == .pad) {
-                result
-                    .ignoresSafeArea(.all, edges: [.top, .leading, .trailing])
-            }else {
-                result
+                
+                await accountController.loadDashboard()
             }
         }
         .onboardingSheet(shouldPresent: $firstLaunch, isPresented: $showSheet, preferredColorScheme: colorScheme)
@@ -115,11 +110,7 @@ struct HomeView: View {
                 )
             }
         }else {
-            if(UIDevice.current.userInterfaceIdiom == .pad) {
-                HeroHeaderView(heroes: data.heroes)
-            }else {
-                HeroCarouselView(heroes: data.heroes)
-            }
+            HeroCarouselView(heroes: data.heroes)
             
             LazyVStack {
                 ForEach(data.buckets) { bucket in

@@ -15,11 +15,11 @@ struct NetworkImage<Overlay>: View where Overlay: View {
     private var data: AsyncResult<Data>
     
     private let url: URL?
-    private let width: CGFloat
+    private let width: CGFloat?
     private let height: CGFloat
     private let cornerRadius: CGFloat
     private let overlay: () -> Overlay
-    init(url: String?, width: CGFloat, height: CGFloat, cornerRadius: CGFloat = 8, @ViewBuilder overlay: @escaping () -> Overlay = { EmptyView() }) {
+    init(url: String?, width: CGFloat? = nil, height: CGFloat, cornerRadius: CGFloat = 8, @ViewBuilder overlay: @escaping () -> Overlay = { EmptyView() }) {
         self.url = if let url = url {
             URL(string: url)
         }else {
@@ -32,7 +32,7 @@ struct NetworkImage<Overlay>: View where Overlay: View {
         self.overlay = overlay
     }
     
-    init(thumbnailEntry: ThumbnailEntry?, width: CGFloat, height: CGFloat, cornerRadius: CGFloat = 8, @ViewBuilder overlay: @escaping () -> Overlay = { EmptyView() }) {
+    init(thumbnailEntry: ThumbnailEntry?, width: CGFloat? = nil, height: CGFloat, cornerRadius: CGFloat = 8, @ViewBuilder overlay: @escaping () -> Overlay = { EmptyView() }) {
         self.url = switch(thumbnailEntry) {
         case .none:
             nil
@@ -60,7 +60,7 @@ struct NetworkImage<Overlay>: View where Overlay: View {
         case .error:
             error()
         default:
-           loading()        .task {
+           loading().task {
                await loadImage()
            }
         }
@@ -83,18 +83,24 @@ struct NetworkImage<Overlay>: View where Overlay: View {
     
     @ViewBuilder
     private func loaded(data: Data) -> some View {
-        if(width == .infinity) {
+        if let width = self.width, width == .infinity {
             Image(uiImage: UIImage(data: data)!)
                 .resizable()
                 .scaledToFill()
                 .frame(maxWidth: width, minHeight: height, maxHeight: height)
                 .overlay(alignment: .bottom, content: overlay)
                 .cornerRadius(cornerRadius)
-        }else {
+        } else if let width = self.width {
             Image(uiImage: UIImage(data: data)!)
                 .resizable()
                 .scaledToFill()
                 .frame(width: width, height: height)
+                .overlay(alignment: .bottom, content: overlay)
+                .cornerRadius(cornerRadius)
+        }else {
+            Image(uiImage: UIImage(data: data)!)
+                .resizable()
+                .scaledToFit()
                 .overlay(alignment: .bottom, content: overlay)
                 .cornerRadius(cornerRadius)
         }

@@ -180,12 +180,12 @@ struct SeriesView: View {
                 }
                 .task {
                     if case .empty = holder {
-                        await loadData(selectedSeasonIndex: selectedSeasonNumber - 1)
+                        await loadData()
                     }
                 }
                 .onChange(of: selectedSeasonNumber) { oldValue, newValue in
                     Task {
-                        await loadData(selectedSeasonIndex: newValue - 1)
+                        await loadData()
                     }
                 }
             }
@@ -599,10 +599,15 @@ struct SeriesView: View {
         }
     }
     
-    private func loadData(selectedSeasonIndex: Int) async {
+    private func loadData() async {
         do {
             if case .success(let data) = holder, data.download {
-                self.holder = .success(Holder(series: data.series, episodable: .season(data.series!.seasons![selectedSeasonIndex]), download: true))
+                let seasons = data.series!.seasons!
+                if(selectedSeasonNumber > seasons.count) {
+                    self.selectedSeasonNumber = seasons.count
+                }
+                let season = seasons[selectedSeasonNumber - 1]
+                self.holder = .success(Holder(series: data.series, episodable: .season(season), download: true))
             }else {
                 if holder.value == nil {
                     self.holder = .loading
@@ -614,7 +619,12 @@ struct SeriesView: View {
                         self.holder = .success(Holder(series: nil, episodable: .playlist(playlist), download: false))
                     }else {
                         let series = try await animeController.getSeries(id: id)
-                        let season = try await animeController.getSeason(id: series.seasons![selectedSeasonIndex].id)
+                        let seasons = series.seasons!
+                        if(selectedSeasonNumber > seasons.count) {
+                            self.selectedSeasonNumber = seasons.count
+                        }
+                        let seasonTemplate = seasons[selectedSeasonNumber - 1]
+                        let season = try await animeController.getSeason(id: seasonTemplate.id)
                         self.holder = .success(Holder(series: series, episodable: .season(season), download: false))
                     }
                 }else if let id = self.id as? String {

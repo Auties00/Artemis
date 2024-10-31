@@ -119,7 +119,7 @@ struct AccountSheet: View {
                     
                     Button(
                         action: {
-                            openURL(URL(string: "https://support.hidive.com/en/support/solutions/articles/11000125495-how-do-i-cancel-my-membership-")!)
+                            openURL(URL(string: "https://www.hidive.com/account?section=subscriptions")!)
                         },
                         label: {
                             HStack {

@@ -6,62 +6,73 @@
 //
 
 import SwiftUI
-import ACarousel
 import AlertToast
 
-struct HeroHeaderView: View {
+struct HeroCarouselView: View {
+    @State
+    private var items: [HeroItem]
     private let heroes: [Hero]
     init(heroes: [Hero]) {
         self.heroes = heroes
+        var items: [HeroItem] = []
+        for hero in heroes {
+            items.append(HeroItem(hero: hero))
+        }
+        self._items = State(initialValue: items)
     }
     
     var body: some View {
-        TabView {
-            ForEach(heroes) { hero in
-                NetworkImage(
-                    thumbnailEntry: hero.imageUrl,
-                    width: .infinity,
-                    height: 800,
-                    cornerRadius: 0
-                )
-                .overlay(alignment: .bottom) {
-                    if case .url(let url) = hero.titleImage {
-                        AsyncImage(url: URL(string: url)!)  { image in
-                            image
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 300)
-                                .padding(.bottom, 60)
-                        } placeholder: {
-                            
-                        }
-                    }
+        ScrollView(.horizontal) {
+            LazyHStack {
+                ForEach(items) { item in
+                    card(item.hero)
                 }
             }
+            .scrollTargetLayout()
         }
-        .tabViewStyle(.page)
-        .indexViewStyle(.page(backgroundDisplayMode: .always))
-        .frame(maxWidth: .infinity, minHeight: 800)
-        .padding(.bottom)
-    }
-}
-
-struct HeroCarouselView: View {
-    private let heroes: [Hero]
-    init(heroes: [Hero]) {
-        self.heroes = heroes
+        .scrollTargetBehavior(.viewAligned)
+        .scrollIndicators(.never)
+        .contentMargins(.leading, 16)
+        .contentMargins(.trailing, 40)
+        .frame(height: UIScreen.main.bounds.size.height / 1.9621)
+        .padding(.top)
     }
     
-    var body: some View {
-        ACarousel(heroes) { hero in
-            HeroCardView(hero: hero)
+    @ViewBuilder
+    private func card(_ hero: Hero) -> some View {
+        let result = HeroCardView(hero: hero)
+           .containerRelativeFrame(.horizontal)
+           .scrollTransition { content, phase in
+               content
+                   .opacity(phase.isIdentity ? 1.0 : 0.95)
+                   .scaleEffect(phase.isIdentity ? 1.0 : 0.95)
+           }
+        if(hero == heroes.last) {
+            result.onAppear {
+                for hero in heroes {
+                    items.append(HeroItem(hero: hero))
+                }
+            }
+        }else {
+            result
         }
-        .padding(.vertical)
-        .frame(maxWidth: .infinity, minHeight: 475)
     }
 }
 
-struct HeroCardView: View {
+fileprivate struct HeroItem: Identifiable {
+    let id: UUID
+    let hero: Hero
+    init(hero: Hero) {
+        self.id = UUID()
+        self.hero = hero
+    }
+    
+    func copy() -> HeroItem {
+        return HeroItem(hero: hero)
+    }
+}
+
+fileprivate struct HeroCardView: View {
     @State
     private var error: Bool = false
     
@@ -80,12 +91,12 @@ struct HeroCardView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack {
             VStack(alignment: .leading, spacing: 0) {
                 NetworkImage(
                     thumbnailEntry: hero.link.event.coverUrl,
                     width: .infinity,
-                    height: 200
+                    height: 175
                 )
                 
                 Spacer()
@@ -130,7 +141,8 @@ struct HeroCardView: View {
             .accentColor(.accentColor)
         }
         .padding()
-        .background(.background.secondary)
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .cornerRadius(8)
         .onTapGesture {
             routerController.path.append(NestedPageType.series(hero.link.event, lastWatchedEpisode: hero.lastWatchedEpisode))
         }
@@ -153,7 +165,6 @@ struct HeroCardView: View {
                 Label("Add to Watchlist", systemImage: "list.star")
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 8))
         .alert(
             "Player error",
             isPresented: $error,
@@ -215,7 +226,7 @@ struct BucketSectionView: View {
     }
     
     var body: some View {
-        let result = VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             Text(toBucketTitle(input: bucket.name))
                 .font(.system(size: 20))
                 .fontWeight(.bold)
@@ -242,11 +253,13 @@ struct BucketSectionView: View {
                                 }
                             )
                             .buttonStyle(.plain)
+                            .tag(contentEntry)
                         }else {
                             NavigationLink(value: NestedPageType.series(contentEntry)) {
                                 label
                             }
                             .buttonStyle(.plain)
+                            .tag(contentEntry)
                         }
                     }
                 }
@@ -261,15 +274,9 @@ struct BucketSectionView: View {
                 Text("Cannot open player")
             }
         )
-        .background(Color.backgroundColor)
+        .background(Color(UIColor.secondarySystemGroupedBackground))
         .cornerRadius(8)
-        .padding(.bottom)
-        
-        if(UIDevice.current.userInterfaceIdiom == .pad) {
-            result
-        }else {
-            result.padding(.horizontal)
-        }
+        .padding()
     }
     
     
@@ -299,7 +306,7 @@ struct BucketSectionView: View {
         }
         .frame(width: 250)
         .padding(12)
-        .background(Color.backgroundColor)
+        .background(Color(UIColor.secondarySystemGroupedBackground))
         .contextMenu {
             bucketEntryContexMenu(contentEntry: contentEntry)
         }
@@ -323,9 +330,7 @@ struct BucketSectionView: View {
             Label("Go to Anime", systemImage: "info.circle")
         }
         
-        if case .episode = contentEntry {
-            
-        }else {
+        if(!isEpisode(contentEntry)) {
             Button {
                 routerController.addToWatchlistItem = if case .season(let season) = contentEntry {
                     .series(season.series!)
@@ -335,6 +340,14 @@ struct BucketSectionView: View {
             } label: {
                 Label("Add to Watchlist", systemImage: "list.star")
             }
+        }
+    }
+    
+    private func isEpisode(_ contentEntry: DescriptableEntry) -> Bool {
+        if case .episode = contentEntry {
+            return true
+        }else {
+            return false
         }
     }
     
@@ -376,7 +389,7 @@ struct BucketSectionView: View {
     }
 }
 
-private extension View {
+fileprivate extension View {
     func watchNow(routerController: RouterController, accountController: AccountController, animeController: AnimeController, bucketEntry: DescriptableEntry) async throws {
         switch(bucketEntry) {
         case .episode(let episode):
@@ -465,7 +478,7 @@ private extension View {
     }
 }
 
-// Can't use .background.secondary or it will be stacked, making the colour wrong
-private extension Color {
+// Can't use .background.secondary or it will be stacked, making the color wrong
+fileprivate extension Color {
     static let backgroundColor: Color = Color(UIColor.secondarySystemGroupedBackground)
 }

@@ -24,7 +24,7 @@ struct DashboardResponse : Decodable, Equatable {
 }
 
 @Observable
-class Hero : Decodable, Identifiable, Equatable {
+class Hero : Decodable, Identifiable, Hashable, Equatable {
     let heroId: Int
     let title: String?
     let description: String?
@@ -37,6 +37,10 @@ class Hero : Decodable, Identifiable, Equatable {
     
     var id: Int {
         return heroId
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
     
     static func == (lhs: Hero, rhs: Hero) -> Bool {

@@ -77,7 +77,6 @@
 		F88812D42C4EB05F0084589B /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88812D32C4EB05F0084589B /* Playlist.swift */; };
 		F88812D62C4EC94B0084589B /* Schedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88812D52C4EC94B0084589B /* Schedule.swift */; };
 		F88A1EB02C469A1700DD48C3 /* RefreshTokenRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88A1EAF2C469A1700DD48C3 /* RefreshTokenRequest.swift */; };
-		F88A1EB92C46B96600DD48C3 /* ACarousel in Frameworks */ = {isa = PBXBuildFile; productRef = F88A1EB82C46B96600DD48C3 /* ACarousel */; };
 		F88A1EBB2C46BB7D00DD48C3 /* RefreshTokenResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88A1EBA2C46BB7D00DD48C3 /* RefreshTokenResponse.swift */; };
 		F88AC5362C51BD1F0099F004 /* AdjacentEpisodesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88AC5352C51BD1F0099F004 /* AdjacentEpisodesResponse.swift */; };
 		F88B6C3A2C5BC943001A7B78 /* OfflineEpisodeSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88B6C392C5BC943001A7B78 /* OfflineEpisodeSaver.swift */; };
@@ -95,6 +94,7 @@
 		F89720B22C5EC6C0001DB75B /* ProfilesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89720B12C5EC6C0001DB75B /* ProfilesResponse.swift */; };
 		F89720B42C5ECC5D001DB75B /* AccountDetailsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89720B32C5ECC5D001DB75B /* AccountDetailsResponse.swift */; };
 		F89720B62C5ED203001DB75B /* ProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89720B52C5ED203001DB75B /* ProfileSection.swift */; };
+		F89CA71B2CCDD390002C7367 /* ACarousel in Frameworks */ = {isa = PBXBuildFile; productRef = F89CA71A2CCDD390002C7367 /* ACarousel */; };
 		F89F2F562C69083600237611 /* EpisodeProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F2F552C69083600237611 /* EpisodeProgressBar.swift */; };
 		F89F2F582C690C7A00237611 /* SelectProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F2F572C690C7A00237611 /* SelectProfileSection.swift */; };
 		F89F2F5A2C690F1600237611 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F2F592C690F1600237611 /* String.swift */; };
@@ -235,11 +235,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F88A1EB92C46B96600DD48C3 /* ACarousel in Frameworks */,
 				F887202A2C3C4E5F001597B0 /* WelcomeSheet in Frameworks */,
 				F887202C2C3C4F03001597B0 /* WelcomeSheet in Frameworks */,
 				F803777A2C73757A00C00C0A /* SwiftUIIntrospect in Frameworks */,
 				F88C1CEB2C62471F0045FA75 /* AlertToast in Frameworks */,
+				F89CA71B2CCDD390002C7367 /* ACarousel in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -595,9 +595,9 @@
 			packageProductDependencies = (
 				F88720292C3C4E5F001597B0 /* WelcomeSheet */,
 				F887202B2C3C4F03001597B0 /* WelcomeSheet */,
-				F88A1EB82C46B96600DD48C3 /* ACarousel */,
 				F88C1CEA2C62471F0045FA75 /* AlertToast */,
 				F80377792C73757A00C00C0A /* SwiftUIIntrospect */,
+				F89CA71A2CCDD390002C7367 /* ACarousel */,
 			);
 			productName = Hidive;
 			productReference = F8871FF22C3C2937001597B0 /* Artemis.app */;
@@ -802,6 +802,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -864,6 +865,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -893,7 +895,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 25U5GYGLQC;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -916,7 +918,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.auties00.artemis;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -939,7 +941,7 @@
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 25U5GYGLQC;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -962,7 +964,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.auties00.artemis;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1058,15 +1060,14 @@
 			package = F88720282C3C4E5F001597B0 /* XCRemoteSwiftPackageReference "Welcome-Sheet" */;
 			productName = WelcomeSheet;
 		};
-		F88A1EB82C46B96600DD48C3 /* ACarousel */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F88A1EB72C46B96600DD48C3 /* XCRemoteSwiftPackageReference "ACarousel" */;
-			productName = ACarousel;
-		};
 		F88C1CEA2C62471F0045FA75 /* AlertToast */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F88C1CE92C62471F0045FA75 /* XCRemoteSwiftPackageReference "AlertToast" */;
 			productName = AlertToast;
+		};
+		F89CA71A2CCDD390002C7367 /* ACarousel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ACarousel;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
