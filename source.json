@@ -38,6 +38,15 @@
       ],
       "versions": [
         {
+          "version": "3.0",
+          "date": "2024-10-31T02:52:14+01:00",
+          "localizedDescription": "Bug fixes and improvements.",
+          "downloadURL": "https://github.com/Auties00/Artemis/releases/download/3.0-19/Artemis.ipa",
+          "size": 2839462,
+          "sha256": "cd1091f584db78e81ef6b24fd72b41192247363fed4913b9612bf3dc9403ab1a",
+          "minOSVersion": "17.0"
+        },
+        {
           "version": "2.0",
           "buildVersion": "16",
           "date": "2024-09-28T11:39:01+02:00",
